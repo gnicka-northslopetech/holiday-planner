@@ -1,0 +1,147 @@
+{
+  "routes": [
+    {
+      "origin": "PIR",
+      "destination": "MLO",
+      "operators": ["SeaJets", "Zante Ferries", "Aegean Speed Lines"],
+      "high_speed_duration_minutes": 155,
+      "conventional_duration_minutes": 420,
+      "high_speed_price_eur": [63, 90],
+      "conventional_price_eur": [35, 50],
+      "frequency": "Multiple daily in summer",
+      "notes": "Most common route to Milos from Athens"
+    },
+    {
+      "origin": "PIR",
+      "destination": "KOF",
+      "operators": ["SeaJets", "Blue Star Ferries"],
+      "high_speed_duration_minutes": 270,
+      "conventional_duration_minutes": 540,
+      "high_speed_price_eur": [55, 85],
+      "conventional_price_eur": [30, 45],
+      "frequency": "Daily in summer (high-speed less frequent)",
+      "notes": "Direct from Piraeus, less frequent than Naxos route"
+    },
+    {
+      "origin": "MLO",
+      "destination": "KOF",
+      "operators": ["SeaJets"],
+      "high_speed_duration_minutes": 240,
+      "conventional_duration_minutes": 0,
+      "high_speed_price_eur": [95, 115],
+      "conventional_price_eur": [],
+      "frequency": "Limited — check specific days",
+      "notes": "Only SeaJets, not daily. Often via Santorini/Folegandros. Confirm sailing day."
+    },
+    {
+      "origin": "KOF",
+      "destination": "PIR",
+      "operators": ["SeaJets", "Blue Star Ferries"],
+      "high_speed_duration_minutes": 270,
+      "conventional_duration_minutes": 540,
+      "high_speed_price_eur": [42, 85],
+      "conventional_price_eur": [30, 45],
+      "frequency": "Daily in summer",
+      "notes": "SeaJets Champion Jet. Departs ~13:20, arrives ~17:50"
+    },
+    {
+      "origin": "PIR",
+      "destination": "SAN",
+      "operators": ["SeaJets", "Blue Star Ferries", "Minoan Lines"],
+      "high_speed_duration_minutes": 280,
+      "conventional_duration_minutes": 480,
+      "high_speed_price_eur": [60, 90],
+      "conventional_price_eur": [35, 55],
+      "frequency": "Multiple daily",
+      "notes": "Very popular route"
+    },
+    {
+      "origin": "PIR",
+      "destination": "MYK",
+      "operators": ["SeaJets", "Blue Star Ferries"],
+      "high_speed_duration_minutes": 155,
+      "conventional_duration_minutes": 300,
+      "high_speed_price_eur": [55, 80],
+      "conventional_price_eur": [30, 45],
+      "frequency": "Multiple daily",
+      "notes": ""
+    },
+    {
+      "origin": "PIR",
+      "destination": "NAX",
+      "operators": ["SeaJets", "Blue Star Ferries"],
+      "high_speed_duration_minutes": 210,
+      "conventional_duration_minutes": 360,
+      "high_speed_price_eur": [50, 75],
+      "conventional_price_eur": [30, 45],
+      "frequency": "Multiple daily",
+      "notes": ""
+    },
+    {
+      "origin": "PIR",
+      "destination": "PAR",
+      "operators": ["SeaJets", "Blue Star Ferries", "Minoan Lines"],
+      "high_speed_duration_minutes": 180,
+      "conventional_duration_minutes": 300,
+      "high_speed_price_eur": [45, 70],
+      "conventional_price_eur": [28, 42],
+      "frequency": "Multiple daily",
+      "notes": ""
+    },
+    {
+      "origin": "PIR",
+      "destination": "IOS",
+      "operators": ["SeaJets", "Blue Star Ferries"],
+      "high_speed_duration_minutes": 210,
+      "conventional_duration_minutes": 420,
+      "high_speed_price_eur": [55, 80],
+      "conventional_price_eur": [32, 48],
+      "frequency": "Daily in summer",
+      "notes": ""
+    },
+    {
+      "origin": "PIR",
+      "destination": "SIF",
+      "operators": ["SeaJets", "Zante Ferries"],
+      "high_speed_duration_minutes": 140,
+      "conventional_duration_minutes": 320,
+      "high_speed_price_eur": [50, 75],
+      "conventional_price_eur": [28, 40],
+      "frequency": "Daily in summer",
+      "notes": "Sifnos is on the western Cyclades line with Serifos and Milos"
+    },
+    {
+      "origin": "NAX",
+      "destination": "KOF",
+      "operators": ["Small Cyclades Lines", "SeaJets"],
+      "high_speed_duration_minutes": 60,
+      "conventional_duration_minutes": 120,
+      "high_speed_price_eur": [20, 35],
+      "conventional_price_eur": [10, 18],
+      "frequency": "Daily via small ferry (Express Skopelitis)",
+      "notes": "The Express Skopelitis is the lifeline ferry for Small Cyclades"
+    },
+    {
+      "origin": "SAN",
+      "destination": "KOF",
+      "operators": ["SeaJets"],
+      "high_speed_duration_minutes": 120,
+      "conventional_duration_minutes": 0,
+      "high_speed_price_eur": [40, 65],
+      "conventional_price_eur": [],
+      "frequency": "Limited summer schedule",
+      "notes": ""
+    },
+    {
+      "origin": "MLO",
+      "destination": "SIF",
+      "operators": ["SeaJets", "Zante Ferries"],
+      "high_speed_duration_minutes": 60,
+      "conventional_duration_minutes": 120,
+      "high_speed_price_eur": [25, 40],
+      "conventional_price_eur": [15, 25],
+      "frequency": "Regular in summer",
+      "notes": "Neighboring islands on western Cyclades line"
+    }
+  ]
+}

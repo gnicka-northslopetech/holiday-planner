@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TripForge - Greek Islands Trip Planner</title>
+<style>
+/* ===== DESIGN SYSTEM ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #003580;
+  --primary-light: #00487a;
+  --cta: #febb02;
+  --cta-hover: #e5a800;
+  --success: #008009;
+  --urgency: #c00;
+  --urgency-soft: #b93d00;
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --border: #e6e6e6;
+  --border-light: #f0f0f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #474747;
+  --text-tertiary: #6b6b6b;
+  --text-link: #006ce4;
+  --badge-bg: #f0f6ff;
+  --whatsapp: #25D366;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 4px; background: var(--border); z-index: 1000;
+}
+.progress-bar__fill {
+  height: 100%; background: var(--primary);
+  transition: width 0.4s ease; width: 0%;
+}
+
+/* ===== HEADER ===== */
+.header {
+  height: 56px; background: #fff; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px;
+  position: sticky; top: 4px; z-index: 100;
+}
+.logo {
+  font-size: 20px; font-weight: 700; color: var(--primary);
+  letter-spacing: -0.5px; text-decoration: none;
+}
+.logo span { color: var(--cta); }
+
+/* ===== SCREENS ===== */
+.screen { display: none; min-height: calc(100vh - 60px); }
+.screen.active { display: block; }
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  background: var(--cta); color: var(--text-primary);
+  font-size: 16px; font-weight: 600; padding: 14px 32px;
+  border-radius: 9999px; border: none; cursor: pointer;
+  transition: background 0.15s ease; font-family: inherit;
+  line-height: 1; display: inline-flex; align-items: center;
+  justify-content: center; gap: 8px; min-height: 48px;
+}
+.btn-primary:hover { background: var(--cta-hover); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { background: #ddd; color: #999; cursor: not-allowed; }
+
+.btn-secondary {
+  background: transparent; color: var(--text-link);
+  font-size: 14px; font-weight: 600; padding: 10px 24px;
+  border-radius: 9999px; border: 1px solid var(--text-link);
+  cursor: pointer; transition: background 0.15s ease; font-family: inherit;
+}
+.btn-secondary:hover { background: var(--badge-bg); }
+
+.btn-whatsapp {
+  background: var(--whatsapp); color: #fff;
+  font-size: 16px; font-weight: 600; padding: 14px 32px;
+  border-radius: 9999px; border: none; cursor: pointer;
+  font-family: inherit; display: flex; align-items: center;
+  justify-content: center; gap: 10px; width: 100%; min-height: 48px;
+}
+.btn-whatsapp:hover { background: #20bd5a; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--surface); border-radius: 8px;
+  border: 1px solid var(--border); padding: 20px;
+  transition: box-shadow 0.15s ease;
+}
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border-radius: 4px;
+  font-size: 12px; font-weight: 600; line-height: 1;
+}
+.badge-flight { background: var(--badge-bg); color: var(--primary); }
+.badge-ferry { background: #e8f5e9; color: #1b5e20; }
+.badge-urgency { background: #ffeee8; color: var(--urgency); }
+.badge-info { background: var(--badge-bg); color: var(--text-link); }
+.badge-nights { background: #f0f6ff; color: var(--primary); }
+.badge-car { background: #fff3e0; color: #e65100; }
+.badge-walk { background: #e8f5e9; color: #1b5e20; }
+
+/* ===== RATING BADGE (Booking style) ===== */
+.rating-badge {
+  background: var(--primary); color: #fff;
+  border-radius: 4px 4px 4px 0; padding: 4px 8px;
+  font-size: 14px; font-weight: 700; display: inline-block;
+}
+
+/* ===== SECTION TITLES ===== */
+.section-label {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--text-tertiary);
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(254,187,2,0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(254,187,2,0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  width: 18px; height: 18px; border: 2px solid var(--border);
+  border-top-color: var(--primary); border-radius: 50%;
+  animation: spin 0.6s linear infinite; display: inline-block;
+}
+
+/* ========================================
+   SCREEN 1: LANDING
+   ======================================== */
+#screen-landing {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: calc(100vh - 60px); padding: 40px 20px 120px;
+  text-align: center;
+}
+#screen-landing .hero-section { max-width: 640px; width: 100%; }
+#screen-landing h1 {
+  font-size: 32px; font-weight: 700; color: var(--text-primary);
+  letter-spacing: -0.5px; margin-bottom: 12px; line-height: 1.2;
+}
+#screen-landing .subhead {
+  font-size: 16px; color: var(--text-secondary);
+  margin-bottom: 32px; line-height: 1.6;
+}
+.input-card {
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  padding: 24px; text-align: left;
+}
+.input-card textarea {
+  width: 100%; min-height: 90px; max-height: 180px;
+  border: 2px solid var(--border); border-radius: 8px;
+  padding: 16px; font-size: 16px; font-family: inherit;
+  color: var(--text-primary); resize: vertical; line-height: 1.5;
+}
+.input-card textarea:focus {
+  outline: none; border-color: var(--primary);
+}
+.input-card .btn-row {
+  display: flex; justify-content: flex-end;
+  align-items: center; margin-top: 16px; gap: 12px;
+}
+.input-card .caption {
+  font-size: 12px; color: var(--text-tertiary); text-align: center;
+  margin-top: 12px;
+}
+.social-proof {
+  font-size: 13px; color: var(--text-tertiary); margin-top: 20px;
+}
+.quick-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center; margin-top: 20px;
+}
+.quick-chip {
+  display: inline-block; padding: 8px 16px; border-radius: 9999px;
+  border: 1px solid var(--border); font-size: 13px;
+  color: var(--text-secondary); background: #fff; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.quick-chip:hover {
+  border-color: var(--primary); background: var(--badge-bg);
+  color: var(--primary);
+}
+.trust-strip {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #fff; border-top: 1px solid var(--border);
+  padding: 12px 20px; display: flex; align-items: center;
+  justify-content: center; gap: 24px; font-size: 12px;
+  color: var(--text-tertiary); z-index: 50;
+}
+.trust-strip .source {
+  font-weight: 600; opacity: 0.5; font-size: 13px;
+}
+
+/* ========================================
+   SCREEN 2: BRIEF / CLARIFICATION
+   ======================================== */
+#screen-brief {
+  padding: 40px 20px 60px; max-width: 640px; margin: 0 auto;
+}
+.clarification-card {
+  background: #fffdf0; border-left: 3px solid var(--cta);
+  border-radius: 0 8px 8px 0; padding: 20px; margin-top: 20px;
+}
+.clarification-card h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 12px;
+}
+.clarification-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px; font-size: 14px;
+}
+.clarification-row label { color: var(--text-secondary); min-width: 100px; }
+.clarification-row input {
+  width: 60px; padding: 6px 10px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: 14px; text-align: center;
+  font-family: inherit;
+}
+.user-message {
+  background: var(--primary); color: #fff; padding: 16px 20px;
+  border-radius: 12px 12px 4px 12px; font-size: 14px;
+  max-width: 85%; margin-left: auto; margin-bottom: 16px;
+  line-height: 1.5;
+}
+.ai-message {
+  background: #fff; border: 1px solid var(--border);
+  padding: 16px 20px; border-radius: 12px 12px 12px 4px;
+  font-size: 14px; max-width: 85%; margin-bottom: 16px;
+  line-height: 1.5; color: var(--text-secondary);
+}
+.ai-message strong { color: var(--text-primary); }
+
+/* ========================================
+   SCREEN 3: CONFIRMATION
+   ======================================== */
+#screen-confirm {
+  padding: 24px 20px 100px; max-width: 600px; margin: 0 auto;
+}
+.step-indicator {
+  font-size: 13px; color: var(--text-tertiary);
+  margin-bottom: 24px; font-weight: 500;
+}
+#screen-confirm h2 {
+  font-size: 24px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 4px; letter-spacing: -0.3px;
+}
+#screen-confirm .sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+.confirm-card {
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+  padding: 24px; margin-bottom: 20px;
+}
+.confirm-card .trip-title {
+  font-size: 20px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+}
+.confirm-card .trip-title .edit-icon {
+  font-size: 14px; color: var(--text-tertiary); cursor: pointer;
+}
+.confirm-section { margin-bottom: 20px; }
+.confirm-section:last-child { margin-bottom: 0; }
+.confirm-section h4 {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-tertiary);
+  margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border-light);
+}
+.confirm-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; font-size: 14px; color: var(--text-secondary);
+}
+.confirm-row .icon { font-size: 16px; width: 24px; text-align: center; }
+.route-pills {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; padding: 8px 0;
+}
+.route-pill {
+  background: var(--badge-bg); color: var(--primary);
+  padding: 6px 14px; border-radius: 9999px;
+  font-size: 13px; font-weight: 600;
+}
+.route-arrow { color: var(--text-tertiary); font-size: 12px; }
+.island-card {
+  background: var(--bg); border-radius: 8px;
+  padding: 14px 16px; margin-bottom: 8px;
+}
+.island-card h5 {
+  font-size: 15px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.island-card .island-meta {
+  font-size: 13px; color: var(--text-tertiary);
+}
+.island-card .island-desc {
+  font-size: 13px; color: var(--text-secondary); margin-top: 4px;
+}
+.budget-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.budget-pill {
+  padding: 6px 16px; border-radius: 9999px;
+  border: 1px solid var(--border); font-size: 13px;
+  color: var(--text-secondary); background: #fff; cursor: pointer;
+}
+.budget-pill.active {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+.urgency-nudge {
+  background: #fff; border-radius: 8px; padding: 16px 20px;
+  border: 1px solid #ffe0cc; margin-bottom: 24px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.urgency-nudge .fire { font-size: 20px; }
+.urgency-nudge .text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.urgency-nudge .text strong { color: var(--urgency-soft); }
+.confirm-cta {
+  text-align: center; margin-top: 24px;
+}
+.confirm-cta .caption {
+  font-size: 12px; color: var(--text-tertiary); margin-top: 10px;
+}
+
+/* ========================================
+   SCREEN 4: RESEARCH / LOADING
+   ======================================== */
+#screen-research {
+  padding: 24px 20px 60px; max-width: 600px; margin: 0 auto;
+}
+.trip-summary-strip {
+  font-size: 13px; color: var(--text-tertiary);
+  padding: 10px 0 20px; border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.research-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 20px; margin-bottom: 12px;
+  display: flex; align-items: flex-start; gap: 12px;
+  animation: slideUp 0.3s ease-out;
+}
+.research-card__icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 14px;
+}
+.research-card__icon--flight { background: var(--badge-bg); color: var(--primary); }
+.research-card__icon--ferry { background: #e8f5e9; color: #1b5e20; }
+.research-card__icon--stay { background: #fff3e0; color: #e65100; }
+.research-card__icon--calc { background: #f3e5f5; color: #6a1b9a; }
+.research-card__icon--done { background: #e8f5e9; color: var(--success); }
+.research-card__body { flex: 1; min-width: 0; }
+.research-card__title {
+  font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px;
+}
+.research-card__result {
+  font-size: 13px; color: var(--text-tertiary); margin-top: 2px;
+}
+.research-card__result strong { color: var(--text-primary); }
+.research-card__status { margin-left: auto; flex-shrink: 0; padding-top: 4px; }
+.check-circle {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--success); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+.urgency-interstitial {
+  background: #fff; border-radius: 8px; padding: 16px 20px;
+  margin-bottom: 12px; border-left: 3px solid var(--cta);
+  animation: slideUp 0.3s ease-out;
+}
+.urgency-interstitial--red { border-left-color: var(--urgency); }
+.urgency-interstitial--blue { border-left-color: var(--primary); }
+.urgency-interstitial h5 {
+  font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;
+}
+.urgency-interstitial p { font-size: 13px; color: var(--text-secondary); }
+.almost-done {
+  text-align: center; padding: 20px; font-size: 15px;
+  color: var(--text-tertiary); font-weight: 500;
+  animation: fadeIn 0.5s ease;
+}
+
+/* ========================================
+   SCREEN 5: ITINERARY RESULTS
+   ======================================== */
+#screen-itinerary { padding-bottom: 100px; }
+.itin-hero {
+  background: linear-gradient(135deg, #003580 0%, #006ce4 100%);
+  padding: 40px 24px 32px; color: #fff; position: relative;
+}
+.itin-hero .logo-small {
+  font-size: 14px; font-weight: 600; opacity: 0.7; margin-bottom: 16px;
+}
+.itin-hero h1 {
+  font-size: 32px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px;
+}
+.itin-hero .subtitle {
+  font-size: 18px; font-weight: 300; color: rgba(255,255,255,0.85); margin-bottom: 12px;
+}
+.itin-hero .meta-pill {
+  display: inline-block; background: rgba(255,255,255,0.15);
+  border-radius: 9999px; padding: 8px 20px; font-size: 14px;
+  margin-bottom: 16px;
+}
+.itin-hero .route-vis {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; margin-top: 8px;
+}
+.itin-hero .route-vis .rpill {
+  background: rgba(255,255,255,0.2); padding: 5px 12px;
+  border-radius: 9999px; font-size: 12px; font-weight: 600;
+}
+.itin-hero .route-vis .rarrow {
+  font-size: 11px; opacity: 0.6;
+}
+.itin-content {
+  max-width: 680px; margin: 0 auto; padding: 24px 20px 0;
+}
+
+/* Book First Hero Section */
+.book-first-section {
+  margin-bottom: 32px;
+}
+.book-first-section .section-label {
+  color: var(--urgency); border-bottom-color: #fcc;
+}
+.action-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin-bottom: 12px;
+  position: relative; padding-left: 56px;
+}
+.action-card__number {
+  position: absolute; left: 20px; top: 20px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.action-card__title {
+  font-size: 15px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+}
+.action-card__reason {
+  font-size: 13px; color: var(--text-tertiary); margin-bottom: 12px;
+}
+.action-card__links { display: flex; gap: 8px; flex-wrap: wrap; }
+.action-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 16px; border-radius: 9999px;
+  border: 1px solid var(--text-link); color: var(--text-link);
+  font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: background 0.15s;
+}
+.action-link:hover { background: var(--badge-bg); }
+
+/* Day Cards */
+.day-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; margin-bottom: 12px;
+  border-left: 4px solid var(--primary);
+}
+.day-card.highlight { border-left-color: var(--cta); }
+.day-card .day-date {
+  font-size: 12px; font-weight: 600; color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+.day-card h3 {
+  font-size: 18px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.day-card .day-subtitle {
+  font-size: 14px; color: var(--text-link); margin-bottom: 12px;
+}
+.day-card .day-badges { display: flex; gap: 6px; margin-bottom: 12px; }
+.transport-leg {
+  padding: 8px 0; font-size: 14px; color: var(--text-secondary);
+}
+.transport-leg .airlines {
+  font-size: 13px; color: var(--text-tertiary); margin-top: 4px;
+}
+.day-card ul {
+  list-style: none; padding: 0; margin: 8px 0;
+}
+.day-card ul li {
+  padding: 4px 0 4px 18px; position: relative;
+  font-size: 14px; color: var(--text-secondary);
+}
+.day-card ul li::before {
+  content: ''; position: absolute; left: 0; top: 12px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--primary);
+}
+.note-card {
+  border-radius: 6px; padding: 12px 16px;
+  font-size: 13px; margin-top: 12px; line-height: 1.5;
+}
+.note-card--yellow {
+  background: #fffdf0; border-left: 3px solid var(--cta);
+  color: var(--text-secondary);
+}
+.note-card--red {
+  background: #fff5f5; border-left: 3px solid var(--urgency);
+  color: var(--text-secondary);
+}
+.note-card--blue {
+  background: #f0f6ff; border-left: 3px solid var(--primary);
+  color: var(--text-secondary);
+}
+.note-card strong { color: var(--text-primary); }
+
+/* Accommodation */
+.accom-header {
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.accom-urgency {
+  background: #ffeee8; border-radius: 8px; padding: 12px 16px;
+  font-size: 13px; color: var(--urgency); font-weight: 500;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.accom-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 20px; margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  text-decoration: none; color: inherit; transition: box-shadow 0.15s;
+  cursor: pointer;
+}
+.accom-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.accom-card .accom-info { flex: 1; min-width: 0; }
+.accom-card .accom-name {
+  font-size: 15px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.accom-card .accom-location {
+  font-size: 13px; color: var(--text-tertiary); margin-bottom: 6px;
+}
+.accom-card .accom-rating-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.accom-card .rating-label {
+  font-size: 12px; color: var(--text-secondary);
+}
+.accom-card .accom-price-block {
+  text-align: right; flex-shrink: 0; margin-left: 16px;
+}
+.accom-card .accom-price {
+  font-size: 20px; font-weight: 700; color: var(--text-primary);
+}
+.accom-card .accom-per-night {
+  font-size: 12px; color: var(--text-tertiary);
+}
+.accom-card .accom-view-link {
+  font-size: 13px; color: var(--text-link); font-weight: 600; margin-top: 4px;
+}
+.show-more-toggle {
+  background: none; border: none; color: var(--text-link);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  padding: 8px 0; font-family: inherit;
+}
+
+/* Cost Section */
+.cost-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.cost-tab {
+  padding: 8px 20px; border-radius: 9999px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; background: #f0f0f0; color: var(--text-tertiary);
+  font-family: inherit;
+}
+.cost-tab.active { background: var(--primary); color: #fff; }
+.cost-table { width: 100%; border-collapse: collapse; }
+.cost-table td {
+  padding: 12px 0; font-size: 14px;
+  border-bottom: 1px solid var(--border-light);
+}
+.cost-table td:first-child { color: var(--text-secondary); }
+.cost-table td:last-child {
+  text-align: right; color: var(--text-primary); font-weight: 600;
+}
+.cost-table tr.total td {
+  border-top: 2px solid var(--primary); border-bottom: none;
+  padding-top: 16px; font-size: 16px; font-weight: 700;
+  color: var(--primary);
+}
+
+/* Checklist */
+.checklist-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; background: #fff;
+  border: 1px solid var(--border); border-radius: 8px;
+  margin-bottom: 6px; cursor: pointer; transition: opacity 0.2s;
+  font-size: 14px; color: var(--text-secondary);
+}
+.checklist-item.done { opacity: 0.5; text-decoration: line-through; }
+.checklist-item input[type="checkbox"] {
+  width: 20px; height: 20px; accent-color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* Links Grid */
+.links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.link-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px; text-decoration: none;
+  transition: box-shadow 0.15s; display: block;
+}
+.link-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.link-card .link-label {
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-tertiary); margin-bottom: 4px;
+}
+.link-card .link-name {
+  font-size: 14px; font-weight: 600; color: var(--text-link);
+}
+
+/* Sticky bar */
+.sticky-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 64px; background: #fff; border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; z-index: 100;
+}
+.sticky-bar .price-info .label {
+  font-size: 12px; color: var(--text-tertiary);
+}
+.sticky-bar .price-info .price {
+  font-size: 18px; font-weight: 700; color: var(--primary);
+}
+
+/* ========================================
+   SCREEN 6: SHARE
+   ======================================== */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4); z-index: 500;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.share-modal {
+  background: #fff; border-radius: 12px; padding: 32px;
+  max-width: 440px; width: 90%; position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+.share-modal h3 {
+  font-size: 20px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 20px;
+}
+.share-modal .close-btn {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none; font-size: 20px;
+  color: var(--text-tertiary); cursor: pointer;
+}
+.share-preview {
+  background: var(--bg); border-radius: 8px; padding: 16px;
+  font-size: 13px; color: var(--text-secondary); margin: 16px 0;
+  white-space: pre-line; line-height: 1.6;
+}
+.share-divider {
+  text-align: center; padding: 16px 0; color: var(--text-tertiary);
+  font-size: 13px;
+}
+.share-buttons { display: flex; flex-direction: column; gap: 10px; }
+
+/* ========================================
+   SCREEN 7: RECIPIENT VIEW
+   ======================================== */
+.recipient-banner {
+  background: var(--badge-bg); padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.recipient-banner .text {
+  font-size: 14px; color: var(--text-secondary);
+}
+.recipient-banner .text strong { color: var(--primary); }
+.recipient-banner .dismiss {
+  background: none; border: none; font-size: 18px;
+  color: var(--text-tertiary); cursor: pointer;
+}
+.reaction-strip {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px; text-align: center;
+  margin-bottom: 24px;
+}
+.reaction-strip h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 12px;
+}
+.reaction-buttons { display: flex; justify-content: center; gap: 12px; }
+.reaction-btn {
+  font-size: 28px; padding: 8px 12px; border-radius: 12px;
+  border: 2px solid var(--border); background: #fff;
+  cursor: pointer; transition: all 0.15s;
+}
+.reaction-btn:hover { border-color: var(--primary); transform: scale(1.1); }
+.reaction-btn.selected {
+  border-color: var(--primary); background: var(--badge-bg);
+  transform: scale(1.1);
+}
+.cost-calculator {
+  background: #fff; border: 2px solid var(--cta);
+  border-radius: 8px; padding: 24px; margin: 24px 0;
+}
+.cost-calculator h3 {
+  font-size: 18px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 16px;
+}
+.calc-field { margin-bottom: 16px; }
+.calc-field label {
+  display: block; font-size: 14px; color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.calc-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.calc-chip {
+  padding: 8px 16px; border-radius: 9999px;
+  border: 1px solid var(--border); font-size: 13px;
+  color: var(--text-secondary); background: #fff; cursor: pointer;
+}
+.calc-chip.active {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+.calc-result {
+  background: var(--badge-bg); border-radius: 8px; padding: 16px;
+  text-align: center; margin-top: 16px;
+}
+.calc-result .amount {
+  font-size: 24px; font-weight: 700; color: var(--primary);
+}
+.calc-result .note {
+  font-size: 12px; color: var(--text-tertiary); margin-top: 4px;
+}
+
+/* Footer */
+.itin-footer {
+  text-align: center; padding: 32px 20px 100px;
+  font-size: 12px; color: var(--text-tertiary);
+}
+.itin-footer a { color: var(--text-link); text-decoration: none; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  #screen-landing h1 { font-size: 24px; }
+  #screen-landing { padding-top: 30px; }
+  .itin-hero h1 { font-size: 24px; }
+  .itin-hero .route-vis { overflow-x: auto; flex-wrap: nowrap; }
+  .accom-card { flex-direction: column; }
+  .accom-card .accom-price-block { text-align: left; margin-left: 0; margin-top: 10px; }
+  .links-grid { grid-template-columns: 1fr; }
+  .quick-chips { flex-direction: column; }
+  .sticky-bar { height: auto; flex-direction: column; gap: 8px; padding: 12px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar"><div class="progress-bar__fill" id="progressFill"></div></div>
+
+<!-- HEADER -->
+<header class="header">
+  <a href="#" class="logo" onclick="goTo('landing');return false;">Trip<span>Forge</span></a>
+</header>
+
+<!-- ============================================================
+     SCREEN 1: LANDING
+     ============================================================ -->
+<div class="screen active" id="screen-landing">
+  <div class="hero-section">
+    <h1>Plan your Greek Islands trip in 60 seconds</h1>
+    <p class="subhead">Tell us where you're going, who's coming, and when. We'll research flights, ferries, and places to stay &mdash; and build a plan you can share with your group.</p>
+
+    <div class="input-card">
+      <textarea id="tripInput" placeholder="e.g. 3 couples from London and Athens, going to Milos and Koufonisia, August 14-21, mid-range budget"></textarea>
+      <div class="btn-row">
+        <button class="btn-primary" id="buildBtn" disabled onclick="goTo('brief')">Build my trip plan</button>
+      </div>
+      <p class="caption">Takes about 60 seconds. Free, no signup required.</p>
+    </div>
+
+    <div class="quick-chips">
+      <span>Popular trips:</span>
+      <button class="quick-chip" onclick="fillChip('London to Santorini + Milos, 7 nights, couple')">London to Santorini + Milos, 7 nights, couple</button>
+      <button class="quick-chip" onclick="fillChip('4 friends, Mykonos + Paros + Naxos, 10 days')">4 friends, Mykonos + Paros + Naxos, 10 days</button>
+      <button class="quick-chip" onclick="fillChip('3 couples from London and Athens, Milos and Koufonisia, Aug 14-21')">3 couples, Milos + Koufonisia, Aug 14-21</button>
+    </div>
+
+    <p class="social-proof">1,247 trips planned this month &middot; Milos, Santorini, Naxos, Paros, and 11 more islands</p>
+  </div>
+
+  <div class="trust-strip">
+    <span>Data from</span>
+    <span class="source">Skyscanner</span>
+    <span class="source">Ferryhopper</span>
+    <span class="source">Booking.com</span>
+    <span class="source">Airbnb</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2: BRIEF INPUT (Inline clarification)
+     ============================================================ -->
+<div class="screen" id="screen-brief">
+  <div class="step-indicator">Understanding your trip...</div>
+
+  <div class="user-message" id="userBriefText">3 couples from London and Athens, going to Milos and Koufonisia, August 14-21, mid-range budget</div>
+
+  <div class="ai-message">
+    <strong>Got it!</strong> Here's what I understood. Let me just confirm a couple of things:
+  </div>
+
+  <div class="clarification-card">
+    <h4>Just checking a couple of things:</h4>
+
+    <div class="clarification-row">
+      <label>Milos:</label>
+      <input type="number" value="5" min="1" max="14"> nights
+    </div>
+    <div class="clarification-row">
+      <label>Koufonisia:</label>
+      <input type="number" value="2" min="1" max="14"> nights
+    </div>
+    <div class="clarification-row">
+      <label>Flying from:</label>
+      <div class="calc-chips" style="display:inline-flex">
+        <span class="calc-chip active">London</span>
+        <span class="calc-chip">Other</span>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; text-align:right;">
+      <button class="btn-primary" onclick="goTo('confirm')">That's right, continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3: CONFIRMATION
+     ============================================================ -->
+<div class="screen" id="screen-confirm">
+  <div class="step-indicator">Step 1 of 3: Confirm your trip</div>
+
+  <h2>Here's what we understood</h2>
+  <p class="sub">Check these details before we research prices.</p>
+
+  <div class="confirm-card">
+    <div class="trip-title">Greece 2026 <span class="edit-icon">&#9998;</span></div>
+
+    <div class="confirm-section">
+      <h4>Your Group</h4>
+      <div class="confirm-row"><span class="icon">&#128101;</span> 3 couples (6 travellers)</div>
+      <div class="confirm-row"><span class="icon">&#9992;</span> London crew (4 people) &mdash; flying from London</div>
+      <div class="confirm-row"><span class="icon">&#128205;</span> Athens crew (2 people) &mdash; already in Greece</div>
+    </div>
+
+    <div class="confirm-section">
+      <h4>Your Route</h4>
+      <div class="route-pills">
+        <span class="route-pill">London</span>
+        <span class="route-arrow">&#9992; &rarr;</span>
+        <span class="route-pill">Athens</span>
+        <span class="route-arrow">&#9992; &rarr;</span>
+        <span class="route-pill">Milos</span>
+        <span class="route-arrow">&#9875; &rarr;</span>
+        <span class="route-pill">Koufonisia</span>
+        <span class="route-arrow">&#9875; &rarr;</span>
+        <span class="route-pill">Athens</span>
+        <span class="route-arrow">&#9992; &rarr;</span>
+        <span class="route-pill">London</span>
+      </div>
+    </div>
+
+    <div class="confirm-section">
+      <h4>Dates</h4>
+      <div class="confirm-row"><span class="icon">&#128197;</span> Thu 14 Aug &ndash; Thu 21 Aug 2026 (7 nights)</div>
+    </div>
+
+    <div class="confirm-section">
+      <h4>Islands</h4>
+      <div class="island-card">
+        <h5>Milos</h5>
+        <div class="island-meta">
+          <span class="badge badge-nights">5 nights</span>
+          <span class="badge badge-car">Needs a car</span>
+        </div>
+        <div class="island-desc">Sarakiniko, Kleftiko boat tour, Plaka sunset</div>
+      </div>
+      <div class="island-card">
+        <h5>Koufonisia</h5>
+        <div class="island-meta">
+          <span class="badge badge-nights">2 nights</span>
+          <span class="badge badge-walk">Walk everywhere</span>
+        </div>
+        <div class="island-desc">Tiny island, Pori beach, authentic Small Cyclades</div>
+      </div>
+    </div>
+
+    <div class="confirm-section">
+      <h4>Budget</h4>
+      <div class="budget-pills">
+        <span class="budget-pill">Budget</span>
+        <span class="budget-pill active">Mid-range</span>
+        <span class="budget-pill">Comfort</span>
+        <span class="budget-pill">Luxury</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="urgency-nudge">
+    <span class="fire">&#128293;</span>
+    <div class="text">
+      <strong>August is peak season for Greek islands.</strong> Koufonisia has only ~20 places to stay on the entire island. The sooner you have a plan, the sooner you can book.
+    </div>
+  </div>
+
+  <div class="confirm-cta">
+    <button class="btn-primary" id="researchBtn" onclick="goTo('research')" style="width:100%;max-width:400px;">
+      Research flights, ferries &amp; stays
+    </button>
+    <p class="caption">This takes about 60 seconds. We'll search Skyscanner, Ferryhopper, Booking.com, and more.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 4: RESEARCH / LOADING
+     ============================================================ -->
+<div class="screen" id="screen-research">
+  <div class="step-indicator">Step 2 of 3: Researching your trip</div>
+  <div class="trip-summary-strip">Greece 2026 &nbsp;|&nbsp; 3 couples &nbsp;|&nbsp; Aug 14&ndash;21 &nbsp;|&nbsp; Milos + Koufonisia</div>
+  <div id="researchFeed"></div>
+  <div id="almostDone" style="display:none;" class="almost-done">Your trip plan is almost ready...</div>
+</div>
+
+<!-- ============================================================
+     SCREEN 5: ITINERARY RESULTS
+     ============================================================ -->
+<div class="screen" id="screen-itinerary">
+  <!-- Hero -->
+  <div class="itin-hero">
+    <div class="logo-small">TripForge</div>
+    <h1>Greece 2026</h1>
+    <div class="subtitle">Milos &amp; Koufonisia</div>
+    <div class="meta-pill">Thu 14 Aug &ndash; Thu 21 Aug 2026 &nbsp;|&nbsp; 3 couples &nbsp;|&nbsp; 6 travellers</div>
+    <div class="route-vis">
+      <span class="rpill">London</span><span class="rarrow">&#9992; &rarr;</span>
+      <span class="rpill">Athens</span><span class="rarrow">&#9992; &rarr;</span>
+      <span class="rpill">Milos</span><span class="rarrow">&#9875; &rarr;</span>
+      <span class="rpill">Koufonisia</span><span class="rarrow">&#9875; &rarr;</span>
+      <span class="rpill">Athens</span><span class="rarrow">&#9992; &rarr;</span>
+      <span class="rpill">London</span>
+    </div>
+  </div>
+
+  <div class="itin-content">
+
+    <!-- ===== WHAT TO BOOK FIRST (HERO SECTION) ===== -->
+    <div class="book-first-section" style="margin-top:24px;">
+      <div class="section-label">What to Book First</div>
+
+      <div class="action-card">
+        <div class="action-card__number">1</div>
+        <div class="action-card__title"><span class="badge badge-urgency">URGENT</span> Koufonisia accommodation</div>
+        <div class="action-card__reason">Only ~20 places on the entire island. August sells out completely.</div>
+        <div class="action-card__links">
+          <a href="https://www.airbnb.com/s/Koufonisia--Greece/homes?checkin=2026-08-19&checkout=2026-08-21&adults=2" target="_blank" class="action-link">Search Airbnb</a>
+          <a href="https://www.booking.com/searchresults.html?ss=Koufonisia&checkin=2026-08-19&checkout=2026-08-21&group_adults=2" target="_blank" class="action-link">Search Booking.com</a>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <div class="action-card__number">2</div>
+        <div class="action-card__title"><span class="badge badge-urgency" style="background:#fff3e0;color:var(--urgency-soft)">URGENT</span> Athens &rarr; Milos flight</div>
+        <div class="action-card__reason">Tiny 70-seat turboprops. Sells out months ahead in summer.</div>
+        <div class="action-card__links">
+          <a href="https://www.olympicair.com/en/flights-from-athens-to-milos" target="_blank" class="action-link">Olympic Air</a>
+          <a href="https://www.skyexpress.gr/en/flights-from-athens-to-milos" target="_blank" class="action-link">Sky Express</a>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <div class="action-card__number">3</div>
+        <div class="action-card__title">Milos accommodation</div>
+        <div class="action-card__reason">More options but still peak August. Book early for best selection.</div>
+        <div class="action-card__links">
+          <a href="https://www.holidu.com/vacation-rentals/greece/milos?checkin=2026-08-14&checkout=2026-08-19&adults=2" target="_blank" class="action-link">Search Holidu</a>
+          <a href="https://www.airbnb.com/s/Milos--Greece/homes?checkin=2026-08-14&checkout=2026-08-19&adults=2" target="_blank" class="action-link">Search Airbnb</a>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <div class="action-card__number">4</div>
+        <div class="action-card__title">London &harr; Athens flights</div>
+        <div class="action-card__reason">Set a price alert. Many carriers on this route &mdash; prices vary widely.</div>
+        <div class="action-card__links">
+          <a href="https://www.skyscanner.net/transport/flights/lond/ath/260814/260821/" target="_blank" class="action-link">Skyscanner</a>
+          <a href="https://www.google.com/travel/flights" target="_blank" class="action-link">Google Flights</a>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <div class="action-card__number">5</div>
+        <div class="action-card__title">Ferries</div>
+        <div class="action-card__reason">Summer 2026 timetables being published now. Book as soon as schedules confirm.</div>
+        <div class="action-card__links">
+          <a href="https://www.ferryhopper.com" target="_blank" class="action-link">Ferryhopper</a>
+          <a href="https://www.seajets.com" target="_blank" class="action-link">SeaJets</a>
+        </div>
+      </div>
+
+      <div class="action-card">
+        <div class="action-card__number">6</div>
+        <div class="action-card__title">Car rental in Milos</div>
+        <div class="action-card__reason">Also sells out in August. Search closer to the date but don't leave it last minute.</div>
+        <div class="action-card__links">
+          <a href="https://www.rentalcars.com" target="_blank" class="action-link">Rentalcars.com</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ITINERARY ===== -->
+    <div style="margin-bottom:32px;">
+      <div class="section-label">Your Itinerary</div>
+
+      <!-- Day 1: Travel -->
+      <div class="day-card">
+        <div class="day-date">Thu Aug 14</div>
+        <h3>Travel Day</h3>
+        <div class="day-subtitle">London &rarr; Athens &rarr; Milos</div>
+
+        <div class="transport-leg">
+          <span class="badge badge-flight">FLIGHT</span> London to Athens &middot; 3h 30m direct
+          <div class="airlines">BA / Aegean from Heathrow &middot; easyJet from Gatwick &middot; Ryanair from Stansted &middot; Wizz Air from Luton<br>Expect ~&pound;95&ndash;160 return</div>
+        </div>
+
+        <div class="transport-leg" style="margin-top:12px;">
+          <span class="badge badge-flight">FLIGHT</span> Athens to Milos &middot; 40 min
+          <div class="airlines">Olympic Air from &euro;44 &middot; Sky Express from &euro;39<br>August realistically &euro;50&ndash;170 one way</div>
+        </div>
+
+        <div class="transport-leg" style="margin-top:12px;">
+          <span class="badge badge-ferry">FERRY ALT</span> Piraeus to Milos &middot; SeaJets high-speed ~2h 35m &middot; &euro;63&ndash;90
+        </div>
+
+        <div class="note-card note-card--yellow">
+          <strong>Athens crew:</strong> Same options &mdash; fly from ATH or ferry from Piraeus. Let's coordinate arrival times.
+        </div>
+      </div>
+
+      <!-- Milos -->
+      <div class="day-card highlight">
+        <div class="day-date">Aug 14&ndash;19</div>
+        <div class="day-badges">
+          <span class="badge badge-nights">5 nights</span>
+          <span class="badge badge-car">Rent a car</span>
+        </div>
+        <h3>Milos</h3>
+        <ul>
+          <li>Sarakiniko (lunar landscape beach)</li>
+          <li>Tsigrado &amp; Firiplaka (south coast gems)</li>
+          <li>Kleftiko boat tour from Adamas (~&euro;60&ndash;120pp)</li>
+          <li>Plaka village for sunset</li>
+          <li>Paleochori (hot sand beach with tavernas)</li>
+        </ul>
+        <div class="note-card note-card--red">
+          <strong>Heads up:</strong> Aug 15 is Assumption of Mary &mdash; big Greek holiday. Expect crowds and some places closed.
+        </div>
+      </div>
+
+      <!-- Island Hop -->
+      <div class="day-card">
+        <div class="day-date">Tue Aug 19</div>
+        <h3>Island Hop</h3>
+        <div class="day-subtitle">Milos &rarr; Koufonisia</div>
+
+        <div class="transport-leg">
+          <span class="badge badge-ferry">FERRY</span> SeaJets (sole operator)
+          <div class="airlines">Departs Milos ~08:00 &middot; Arrives Koufonisia ~12:00&ndash;13:00<br>Duration: ~4 hours &middot; Price: &euro;107.70 per person</div>
+        </div>
+
+        <div class="note-card note-card--yellow">
+          <strong>Important:</strong> This route only runs on certain days. Aug 19 (Tuesday) is confirmed as a sailing day.
+        </div>
+      </div>
+
+      <!-- Koufonisia -->
+      <div class="day-card highlight">
+        <div class="day-date">Aug 19&ndash;21</div>
+        <div class="day-badges">
+          <span class="badge badge-nights">2 nights</span>
+          <span class="badge badge-walk">No car needed</span>
+        </div>
+        <h3>Koufonisia</h3>
+        <ul>
+          <li>Pori beach (best on the island, fine white sand)</li>
+          <li>Italida &amp; Fanos beaches</li>
+          <li>Chora village &mdash; tavernas, bars, bakeries</li>
+          <li>Sea taxi around the island</li>
+          <li>Walk everywhere &mdash; island is tiny</li>
+        </ul>
+      </div>
+
+      <!-- Return -->
+      <div class="day-card">
+        <div class="day-date">Thu Aug 21</div>
+        <h3>Return Day</h3>
+        <div class="day-subtitle">Koufonisia &rarr; Athens &rarr; London</div>
+
+        <div class="transport-leg">
+          <span class="badge badge-ferry">FERRY</span> Koufonisia to Piraeus
+          <div class="airlines">SeaJets Champion Jet 3 &middot; Departs ~13:20, arrives Piraeus ~17:50 &middot; &euro;42&ndash;85 per person</div>
+        </div>
+
+        <div class="transport-leg" style="margin-top:12px;">
+          <span class="badge" style="background:#fff3e0;color:#e65100;">TAXI</span> Piraeus to Athens Airport &middot; ~45 min &middot; ~&euro;40
+        </div>
+
+        <div class="transport-leg" style="margin-top:12px;">
+          <span class="badge badge-flight">FLIGHT</span> Athens to London (evening)
+          <div class="airlines">21:15 Ryanair &rarr; Stansted (safest timing, cheapest)<br>19:10 Aegean &rarr; Heathrow (tight but doable)<br>20:45 easyJet &rarr; Luton (check if runs Thursdays)</div>
+        </div>
+
+        <div class="note-card note-card--blue">
+          <strong>Safer option:</strong> Take the evening ferry on Aug 20 instead, sleep near Athens airport, fly out morning of Aug 21. Removes all stress.
+        </div>
+        <div class="note-card note-card--yellow" style="margin-top:8px;">
+          <strong>Athens crew:</strong> You're home once you dock at Piraeus!
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ACCOMMODATION: MILOS ===== -->
+    <div style="margin-bottom:32px;">
+      <div class="section-label">Where to Stay</div>
+      <div class="accom-header">Milos &nbsp;|&nbsp; Aug 14&ndash;19 (5 nights) &nbsp;|&nbsp; 2 guests</div>
+
+      <a href="https://www.holidu.com/d/62182229" target="_blank" class="accom-card">
+        <div class="accom-info">
+          <div class="accom-name">Echinousa Apartment no6</div>
+          <div class="accom-location">Psathi &middot; 1 bed &middot; sea view &middot; free daily cleaning + port transfer</div>
+          <div class="accom-rating-row">
+            <span class="rating-badge">10.0</span>
+            <span class="rating-label">Exceptional</span>
+          </div>
+        </div>
+        <div class="accom-price-block">
+          <div class="accom-price">$118</div>
+          <div class="accom-per-night">per night &middot; ~$590 total</div>
+          <div class="accom-view-link">View on Holidu &rarr;</div>
+        </div>
+      </a>
+
+      <a href="https://www.holidu.com/d/62175009" target="_blank" class="accom-card">
+        <div class="accom-info">
+          <div class="accom-name">Echinousa Katoikia no2</div>
+          <div class="accom-location">Psathi &middot; 1 bed &middot; king bed &middot; mountain views</div>
+          <div class="accom-rating-row">
+            <span class="rating-badge">9.0</span>
+            <span class="rating-label">Wonderful</span>
+          </div>
+        </div>
+        <div class="accom-price-block">
+          <div class="accom-price">$118</div>
+          <div class="accom-per-night">per night &middot; ~$590 total</div>
+          <div class="accom-view-link">View on Holidu &rarr;</div>
+        </div>
+      </a>
+
+      <a href="https://www.holidu.com/d/53364856" target="_blank" class="accom-card">
+        <div class="accom-info">
+          <div class="accom-name">Nikos Family Milos</div>
+          <div class="accom-location">Adamas (port town) &middot; 2 bed &middot; sea view &middot; private terrace</div>
+          <div class="accom-rating-row">
+            <span class="rating-badge">7.2</span>
+            <span class="rating-label">Good</span>
+          </div>
+        </div>
+        <div class="accom-price-block">
+          <div class="accom-price">$177</div>
+          <div class="accom-per-night">per night &middot; ~$885 total</div>
+          <div class="accom-view-link">View on Holidu &rarr;</div>
+        </div>
+      </a>
+
+      <div id="milosMore" style="display:none;">
+        <a href="https://www.holidu.com/d/62175042" target="_blank" class="accom-card">
+          <div class="accom-info">
+            <div class="accom-name">Echinousa Maisonette no4</div>
+            <div class="accom-location">Psathi &middot; 1 bed + living room &middot; 3 balconies &middot; free port transfer</div>
+            <div class="accom-rating-row">
+              <span class="rating-badge">10.0</span>
+              <span class="rating-label">Exceptional</span>
+            </div>
+          </div>
+          <div class="accom-price-block">
+            <div class="accom-price">$259</div>
+            <div class="accom-per-night">per night &middot; ~$1,295 total</div>
+            <div class="accom-view-link">View on Holidu &rarr;</div>
+          </div>
+        </a>
+
+        <a href="https://www.holidu.com/d/56256054" target="_blank" class="accom-card">
+          <div class="accom-info">
+            <div class="accom-name">Moon Kiss Apartment</div>
+            <div class="accom-location">Milos &middot; sea view &middot; shared heated pool &middot; beachfront</div>
+            <div class="accom-rating-row">
+              <span class="rating-badge">8.7</span>
+              <span class="rating-label">Very Good</span>
+            </div>
+          </div>
+          <div class="accom-price-block">
+            <div class="accom-price">$321</div>
+            <div class="accom-per-night">per night &middot; ~$1,605 total</div>
+            <div class="accom-view-link">View on Holidu &rarr;</div>
+          </div>
+        </a>
+      </div>
+      <button class="show-more-toggle" id="milosToggle" onclick="toggleMore('milos')">Show 2 more options</button>
+    </div>
+
+    <!-- ===== ACCOMMODATION: KOUFONISIA ===== -->
+    <div style="margin-bottom:32px;">
+      <div class="accom-header">Koufonisia &nbsp;|&nbsp; Aug 19&ndash;21 (2 nights) &nbsp;|&nbsp; 2 guests</div>
+
+      <div class="accom-urgency">&#128293; Only ~20 properties on this island. August availability disappears fast.</div>
+
+      <a href="https://www.booking.com/hotel/gr/alkionides-studios-koufonisi.html" target="_blank" class="accom-card">
+        <div class="accom-info">
+          <div class="accom-name">Alkionides Studios</div>
+          <div class="accom-location">Chora &middot; 600m from beach</div>
+          <div class="accom-rating-row">
+            <span class="rating-badge">9.7</span>
+            <span class="rating-label">Exceptional &middot; 234 reviews</span>
+          </div>
+        </div>
+        <div class="accom-price-block">
+          <div class="accom-price">~$85</div>
+          <div class="accom-per-night">per night &middot; ~$170 total</div>
+          <div class="accom-view-link">View on Booking.com &rarr;</div>
+        </div>
+      </a>
+
+      <a href="https://aeoloshotel.com" target="_blank" class="accom-card">
+        <div class="accom-info">
+          <div class="accom-name">Aeolos Hotel</div>
+          <div class="accom-location">Chora &middot; pool &middot; 200m from port &middot; breakfast buffet</div>
+          <div class="accom-rating-row">
+            <span class="rating-badge">9.3</span>
+            <span class="rating-label">Wonderful</span>
+          </div>
+        </div>
+        <div class="accom-price-block">
+          <div class="accom-price">~$114</div>
+          <div class="accom-per-night">per night &middot; ~$228 total</div>
+          <div class="accom-view-link">View on Aeolos &rarr;</div>
+        </div>
+      </a>
+
+      <a href="https://www.myrtohotelkoufonisia.com" target="_blank" class="accom-card">
+        <div class="accom-info">
+          <div class="accom-name">Myrto Hotel</div>
+          <div class="accom-location">Chora &middot; beachfront &middot; 40m from beach &middot; 200m from port</div>
+          <div class="accom-rating-row">
+            <span class="rating-badge">8.8</span>
+            <span class="rating-label">Very Good &middot; 385 reviews</span>
+          </div>
+        </div>
+        <div class="accom-price-block">
+          <div class="accom-price">~$129</div>
+          <div class="accom-per-night">per night &middot; ~$258 total</div>
+          <div class="accom-view-link">View on Myrto &rarr;</div>
+        </div>
+      </a>
+
+      <div id="koufMore" style="display:none;">
+        <a href="https://www.booking.com/hotel/gr/keros-art.html" target="_blank" class="accom-card">
+          <div class="accom-info">
+            <div class="accom-name">Keros Art Hotel</div>
+            <div class="accom-location">Chora &middot; boutique &middot; pool &middot; daily breakfast &middot; sea-view balconies</div>
+            <div class="accom-rating-row">
+              <span class="rating-badge">9.7</span>
+              <span class="rating-label">Exceptional &middot; 707 reviews</span>
+            </div>
+          </div>
+          <div class="accom-price-block">
+            <div class="accom-price">~$194</div>
+            <div class="accom-per-night">per night &middot; ~$388 total</div>
+            <div class="accom-view-link">View on Booking.com &rarr;</div>
+          </div>
+        </a>
+
+        <a href="https://www.airbnb.com/rooms/3624609" target="_blank" class="accom-card">
+          <div class="accom-info">
+            <div class="accom-name">Thalasso-Koufonisia</div>
+            <div class="accom-location">Airbnb &middot; traditional island house &middot; 3 guests</div>
+            <div class="accom-rating-row">
+              <span class="rating-badge">4.96</span>
+              <span class="rating-label">Superb &middot; 53 reviews (Airbnb /5)</span>
+            </div>
+          </div>
+          <div class="accom-price-block">
+            <div class="accom-price">~$139</div>
+            <div class="accom-per-night">per night &middot; ~$278 total</div>
+            <div class="accom-view-link">View on Airbnb &rarr;</div>
+          </div>
+        </a>
+
+        <a href="https://www.airbnb.com/rooms/50684416" target="_blank" class="accom-card">
+          <div class="accom-info">
+            <div class="accom-name">ARCHANGELO Sea View</div>
+            <div class="accom-location">Airbnb &middot; Cycladic apartment &middot; 400m from port beach</div>
+            <div class="accom-rating-row">
+              <span class="rating-badge">4.98</span>
+              <span class="rating-label">Superb &middot; 45 reviews (Airbnb /5)</span>
+            </div>
+          </div>
+          <div class="accom-price-block">
+            <div class="accom-price">~$164</div>
+            <div class="accom-per-night">per night &middot; ~$328 total</div>
+            <div class="accom-view-link">View on Airbnb &rarr;</div>
+          </div>
+        </a>
+      </div>
+      <button class="show-more-toggle" id="koufToggle" onclick="toggleMore('kouf')">Show 3 more options</button>
+    </div>
+
+    <!-- ===== COSTS ===== -->
+    <div style="margin-bottom:32px;">
+      <div class="section-label">Estimated Costs Per Person</div>
+
+      <div class="cost-tabs">
+        <button class="cost-tab active" onclick="showCostTab('london',this)">London group</button>
+        <button class="cost-tab" onclick="showCostTab('athens',this)">Athens couple</button>
+      </div>
+
+      <div class="card" id="costLondon">
+        <table class="cost-table">
+          <tr><td>Flights London &harr; Athens (return)</td><td>&pound;95 &ndash; 160</td></tr>
+          <tr><td>Flight Athens &rarr; Milos (one way)</td><td>&euro;50 &ndash; 170</td></tr>
+          <tr><td>Ferry Milos &rarr; Koufonisia</td><td>&euro;108</td></tr>
+          <tr><td>Ferry Koufonisia &rarr; Piraeus</td><td>&euro;42 &ndash; 85</td></tr>
+          <tr><td>Taxi Piraeus &rarr; ATH airport</td><td>&euro;20 (shared)</td></tr>
+          <tr><td>Milos accommodation (5 nights, your half)</td><td>$295 &ndash; $800</td></tr>
+          <tr><td>Koufonisia accommodation (2 nights, your half)</td><td>$85 &ndash; $194</td></tr>
+          <tr><td>Car rental Milos (5 days, split)</td><td>&euro;150 &ndash; 250</td></tr>
+          <tr class="total"><td>Total per person (approx)</td><td>&euro;700 &ndash; 1,500</td></tr>
+        </table>
+        <p style="font-size:12px;color:var(--text-tertiary);margin-top:12px;">Prices are estimates based on current availability. Check booking links for live prices.</p>
+      </div>
+
+      <div class="card" id="costAthens" style="display:none;">
+        <table class="cost-table">
+          <tr><td>Flight Athens &rarr; Milos (one way)</td><td>&euro;50 &ndash; 170</td></tr>
+          <tr><td>Ferry Milos &rarr; Koufonisia</td><td>&euro;108</td></tr>
+          <tr><td>Ferry Koufonisia &rarr; Piraeus</td><td>&euro;42 &ndash; 85</td></tr>
+          <tr><td>Milos accommodation (5 nights, your half)</td><td>$295 &ndash; $800</td></tr>
+          <tr><td>Koufonisia accommodation (2 nights, your half)</td><td>$85 &ndash; $194</td></tr>
+          <tr><td>Car rental Milos (5 days, split)</td><td>&euro;150 &ndash; 250</td></tr>
+          <tr class="total"><td>Total per person (approx)</td><td>&euro;500 &ndash; 1,200</td></tr>
+        </table>
+        <p style="font-size:12px;color:var(--text-tertiary);margin-top:12px;">No London &harr; Athens flights needed. Ferry from Piraeus to Milos is the easiest option.</p>
+      </div>
+    </div>
+
+    <!-- ===== BOOKING CHECKLIST ===== -->
+    <div style="margin-bottom:32px;">
+      <div class="section-label">Booking Checklist</div>
+      <label class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"> Koufonisia accommodation</label>
+      <label class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"> Athens &rarr; Milos flight</label>
+      <label class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"> Milos accommodation</label>
+      <label class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"> London &harr; Athens flights</label>
+      <label class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"> Ferries (Milos&rarr;Koufonisia + Koufonisia&rarr;Piraeus)</label>
+      <label class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"> Car rental (Milos, 5 days)</label>
+    </div>
+
+    <!-- ===== USEFUL LINKS ===== -->
+    <div style="margin-bottom:32px;">
+      <div class="section-label">Useful Links</div>
+      <div class="links-grid">
+        <a href="https://www.skyscanner.net/transport/flights/lond/ath/260814/260821/" target="_blank" class="link-card">
+          <div class="link-label">Flights</div>
+          <div class="link-name">Skyscanner</div>
+        </a>
+        <a href="https://www.google.com/travel/flights" target="_blank" class="link-card">
+          <div class="link-label">Flights</div>
+          <div class="link-name">Google Flights</div>
+        </a>
+        <a href="https://www.ferryhopper.com" target="_blank" class="link-card">
+          <div class="link-label">Ferries</div>
+          <div class="link-name">Ferryhopper</div>
+        </a>
+        <a href="https://www.seajets.com" target="_blank" class="link-card">
+          <div class="link-label">Ferries</div>
+          <div class="link-name">SeaJets</div>
+        </a>
+        <a href="https://www.airbnb.com/milos-greece/stays" target="_blank" class="link-card">
+          <div class="link-label">Milos Stays</div>
+          <div class="link-name">Airbnb</div>
+        </a>
+        <a href="https://www.airbnb.com/koufonisia-greece/stays" target="_blank" class="link-card">
+          <div class="link-label">Koufonisia Stays</div>
+          <div class="link-name">Airbnb</div>
+        </a>
+        <a href="https://www.booking.com/city/gr/koufonisi.html" target="_blank" class="link-card">
+          <div class="link-label">Koufonisia Hotels</div>
+          <div class="link-name">Booking.com</div>
+        </a>
+        <a href="https://www.holidu.com/vacation-rentals/greece/milos" target="_blank" class="link-card">
+          <div class="link-label">Milos Rentals</div>
+          <div class="link-name">Holidu</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="itin-footer">
+      Built with TripForge &nbsp;|&nbsp; Prices are estimates &nbsp;|&nbsp; Feb 2026<br>
+      <a href="#" onclick="goTo('landing');return false;">Plan your own trip at TripForge</a>
+    </div>
+  </div>
+
+  <!-- Sticky Share Bar -->
+  <div class="sticky-bar" id="stickyBar">
+    <div class="price-info">
+      <div class="label">Est. per person</div>
+      <div class="price">&euro;700 &ndash; 1,500</div>
+    </div>
+    <button class="btn-primary" onclick="openShareModal()">Share with group</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 6: SHARE MODAL (overlay on Screen 5)
+     ============================================================ -->
+<div class="modal-overlay" id="shareModal">
+  <div class="share-modal">
+    <button class="close-btn" onclick="closeShareModal()">&times;</button>
+    <h3>Share your trip plan</h3>
+
+    <button class="btn-whatsapp" onclick="goTo('recipient')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.116.549 4.106 1.513 5.837L0 24l6.327-1.474A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.82c-1.935 0-3.753-.525-5.312-1.44l-.381-.226-3.952.921.99-3.819-.248-.394A9.794 9.794 0 012.18 12 9.82 9.82 0 0112 2.18 9.82 9.82 0 0121.82 12 9.82 9.82 0 0112 21.82z"/></svg>
+      Send on WhatsApp
+    </button>
+
+    <div class="share-preview">Greece 2026 &mdash; Milos &amp; Koufonisia
+3 couples | Aug 14&ndash;21 | ~&euro;700&ndash;1,500pp
+
+I've researched flights, ferries, and places to stay.
+Have a look and tell me what you think:
+https://tripforge.app/trip/greece2026</div>
+
+    <div class="share-divider">&mdash; or &mdash;</div>
+
+    <div class="share-buttons">
+      <button class="btn-secondary" id="copyLinkBtn" onclick="copyLink()" style="width:100%;">Copy link</button>
+      <button class="btn-secondary" onclick="emailShare()" style="width:100%;">Send by email</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 7: RECIPIENT VIEW
+     ============================================================ -->
+<div class="screen" id="screen-recipient">
+  <!-- Banner -->
+  <div class="recipient-banner">
+    <div class="text"><strong>Sarah</strong> shared this trip plan with you. Scroll to "What to Book First" to see what needs booking urgently.</div>
+    <button class="dismiss" onclick="this.parentElement.style.display='none'">&times;</button>
+  </div>
+
+  <!-- Same hero -->
+  <div class="itin-hero">
+    <div class="logo-small">TripForge</div>
+    <h1>Greece 2026</h1>
+    <div class="subtitle">Milos &amp; Koufonisia</div>
+    <div class="meta-pill">Thu 14 Aug &ndash; Thu 21 Aug 2026 &nbsp;|&nbsp; 3 couples &nbsp;|&nbsp; 6 travellers</div>
+    <div class="route-vis">
+      <span class="rpill">London</span><span class="rarrow">&#9992; &rarr;</span>
+      <span class="rpill">Athens</span><span class="rarrow">&#9992; &rarr;</span>
+      <span class="rpill">Milos</span><span class="rarrow">&#9875; &rarr;</span>
+      <span class="rpill">Koufonisia</span><span class="rarrow">&#9875; &rarr;</span>
+      <span class="rpill">Athens</span><span class="rarrow">&#9992; &rarr;</span>
+      <span class="rpill">London</span>
+    </div>
+  </div>
+
+  <div class="itin-content">
+    <!-- Reaction strip -->
+    <div class="reaction-strip" style="margin-top:24px;">
+      <h4>What do you think?</h4>
+      <div class="reaction-buttons">
+        <button class="reaction-btn" onclick="selectReaction(this)">&#128077;</button>
+        <button class="reaction-btn" onclick="selectReaction(this)">&#128293;</button>
+        <button class="reaction-btn" onclick="selectReaction(this)">&#129300;</button>
+        <button class="reaction-btn" onclick="selectReaction(this)">&#128064;</button>
+        <button class="reaction-btn" onclick="selectReaction(this)">&#10060;</button>
+      </div>
+      <div id="reactionResult" style="margin-top:12px;font-size:13px;color:var(--text-tertiary);display:none;">
+        Sarah reacted &#128293; &middot; Alex reacted &#128077;
+      </div>
+    </div>
+
+    <!-- What to Book First (same content) -->
+    <div class="book-first-section">
+      <div class="section-label" style="color:var(--urgency);border-bottom-color:#fcc;">What to Book First</div>
+      <div class="action-card">
+        <div class="action-card__number">1</div>
+        <div class="action-card__title"><span class="badge badge-urgency">URGENT</span> Koufonisia accommodation</div>
+        <div class="action-card__reason">Only ~20 places on the entire island. August sells out completely.</div>
+        <div class="action-card__links">
+          <a href="https://www.airbnb.com/s/Koufonisia--Greece/homes?checkin=2026-08-19&checkout=2026-08-21&adults=2" target="_blank" class="action-link">Search Airbnb</a>
+          <a href="https://www.booking.com/searchresults.html?ss=Koufonisia&checkin=2026-08-19&checkout=2026-08-21&group_adults=2" target="_blank" class="action-link">Search Booking.com</a>
+        </div>
+      </div>
+      <div class="action-card">
+        <div class="action-card__number">2</div>
+        <div class="action-card__title"><span class="badge badge-urgency" style="background:#fff3e0;color:var(--urgency-soft)">URGENT</span> Athens &rarr; Milos flight</div>
+        <div class="action-card__reason">Tiny 70-seat turboprops. Sells out months ahead.</div>
+        <div class="action-card__links">
+          <a href="https://www.olympicair.com/en/flights-from-athens-to-milos" target="_blank" class="action-link">Olympic Air</a>
+          <a href="https://www.skyexpress.gr/en/flights-from-athens-to-milos" target="_blank" class="action-link">Sky Express</a>
+        </div>
+      </div>
+      <div class="action-card">
+        <div class="action-card__number">3</div>
+        <div class="action-card__title">Milos accommodation</div>
+        <div class="action-card__reason">Peak August &mdash; book early for best selection.</div>
+        <div class="action-card__links">
+          <a href="https://www.holidu.com/vacation-rentals/greece/milos?checkin=2026-08-14&checkout=2026-08-19&adults=2" target="_blank" class="action-link">Search Holidu</a>
+          <a href="https://www.airbnb.com/s/Milos--Greece/homes?checkin=2026-08-14&checkout=2026-08-19&adults=2" target="_blank" class="action-link">Search Airbnb</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Cost Calculator -->
+    <div class="cost-calculator">
+      <h3>What will this cost YOU?</h3>
+
+      <div class="calc-field">
+        <label>Where are you flying from?</label>
+        <div class="calc-chips">
+          <span class="calc-chip active" onclick="selectCalcChip(this,'origin')">London</span>
+          <span class="calc-chip" onclick="selectCalcChip(this,'origin')">Athens</span>
+          <span class="calc-chip" onclick="selectCalcChip(this,'origin')">Other</span>
+        </div>
+      </div>
+
+      <div class="calc-field">
+        <label>Sharing accommodation with:</label>
+        <div class="calc-chips">
+          <span class="calc-chip active" onclick="selectCalcChip(this,'sharing')">A partner</span>
+          <span class="calc-chip" onclick="selectCalcChip(this,'sharing')">Solo room</span>
+        </div>
+      </div>
+
+      <div class="calc-result">
+        <div class="amount" id="calcAmount">&euro;700 &ndash; 1,500</div>
+        <div class="note">Estimated total per person</div>
+      </div>
+    </div>
+
+    <!-- Abbreviated itinerary reference -->
+    <div style="margin-bottom:32px;">
+      <div class="section-label">Trip Overview</div>
+      <div class="day-card">
+        <div class="day-date">Thu Aug 14</div>
+        <h3>Travel Day</h3>
+        <div class="day-subtitle">London &rarr; Athens &rarr; Milos</div>
+      </div>
+      <div class="day-card highlight">
+        <div class="day-date">Aug 14&ndash;19</div>
+        <h3>Milos &middot; 5 nights</h3>
+        <div class="day-subtitle">Sarakiniko, Kleftiko, Plaka sunset</div>
+      </div>
+      <div class="day-card">
+        <div class="day-date">Tue Aug 19</div>
+        <h3>Ferry to Koufonisia</h3>
+        <div class="day-subtitle">SeaJets ~4h &middot; &euro;108pp</div>
+      </div>
+      <div class="day-card highlight">
+        <div class="day-date">Aug 19&ndash;21</div>
+        <h3>Koufonisia &middot; 2 nights</h3>
+        <div class="day-subtitle">Pori beach, Chora village</div>
+      </div>
+      <div class="day-card">
+        <div class="day-date">Thu Aug 21</div>
+        <h3>Return Day</h3>
+        <div class="day-subtitle">Koufonisia &rarr; Piraeus &rarr; Athens &rarr; London</div>
+      </div>
+    </div>
+
+    <!-- Full cost table -->
+    <div style="margin-bottom:32px;">
+      <div class="section-label">Full Cost Breakdown</div>
+      <div class="card">
+        <table class="cost-table">
+          <tr><td>Flights London &harr; Athens (return)</td><td>&pound;95 &ndash; 160</td></tr>
+          <tr><td>Flight Athens &rarr; Milos (one way)</td><td>&euro;50 &ndash; 170</td></tr>
+          <tr><td>Ferry Milos &rarr; Koufonisia</td><td>&euro;108</td></tr>
+          <tr><td>Ferry Koufonisia &rarr; Piraeus</td><td>&euro;42 &ndash; 85</td></tr>
+          <tr><td>Taxi Piraeus &rarr; ATH airport</td><td>&euro;20 (shared)</td></tr>
+          <tr><td>Milos accommodation (5n, your half)</td><td>$295 &ndash; $800</td></tr>
+          <tr><td>Koufonisia accommodation (2n, your half)</td><td>$85 &ndash; $194</td></tr>
+          <tr><td>Car rental Milos (5 days, split)</td><td>&euro;150 &ndash; 250</td></tr>
+          <tr class="total"><td>Total per person (approx)</td><td>&euro;700 &ndash; 1,500</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="itin-footer">
+      Built with TripForge &nbsp;|&nbsp; Prices are estimates &nbsp;|&nbsp; Feb 2026<br>
+      Want to explore different islands or dates? <a href="#" onclick="goTo('landing');return false;">Build your own plan at TripForge</a>
+    </div>
+  </div>
+
+  <!-- Sticky bar -->
+  <div class="sticky-bar">
+    <div class="price-info">
+      <div class="label">Est. per person</div>
+      <div class="price">&euro;700 &ndash; 1,500</div>
+    </div>
+    <button class="btn-primary" onclick="openShareModal()">Share plan</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ===== STATE =====
+var currentScreen = 'landing';
+var researchTimer = null;
+
+// ===== NAVIGATION =====
+function goTo(screen) {
+  // Hide all screens
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  // Close share modal if open
+  closeShareModal();
+
+  currentScreen = screen;
+  window.scrollTo(0, 0);
+
+  switch(screen) {
+    case 'landing':
+      document.getElementById('screen-landing').classList.add('active');
+      setProgress(0);
+      break;
+    case 'brief':
+      document.getElementById('screen-brief').classList.add('active');
+      setProgress(10);
+      // Auto-fill the brief text from textarea
+      var input = document.getElementById('tripInput').value;
+      if (input) {
+        document.getElementById('userBriefText').textContent = input;
+      }
+      break;
+    case 'confirm':
+      document.getElementById('screen-confirm').classList.add('active');
+      setProgress(25);
+      break;
+    case 'research':
+      document.getElementById('screen-research').classList.add('active');
+      setProgress(50);
+      startResearch();
+      break;
+    case 'itinerary':
+      document.getElementById('screen-itinerary').classList.add('active');
+      setProgress(100);
+      // Hide progress bar after 3s
+      setTimeout(function() {
+        document.querySelector('.progress-bar').style.opacity = '0';
+        document.querySelector('.progress-bar').style.transition = 'opacity 0.5s';
+      }, 3000);
+      break;
+    case 'recipient':
+      document.getElementById('screen-recipient').classList.add('active');
+      setProgress(100);
+      document.querySelector('.progress-bar').style.opacity = '0';
+      break;
+  }
+}
+
+function setProgress(pct) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.querySelector('.progress-bar').style.opacity = '1';
+}
+
+// ===== LANDING =====
+var tripInput = document.getElementById('tripInput');
+var buildBtn = document.getElementById('buildBtn');
+
+tripInput.addEventListener('input', function() {
+  buildBtn.disabled = tripInput.value.length < 20;
+});
+
+function fillChip(text) {
+  tripInput.value = text;
+  buildBtn.disabled = false;
+  tripInput.focus();
+}
+
+// ===== RESEARCH FEED =====
+var researchSteps = [
+  { icon: 'flight', title: 'Searching London to Athens flights...', result: 'Found 12 options from 5 airlines &mdash; cheapest <strong>&pound;85</strong>' },
+  { icon: 'flight', title: 'Searching Athens to Milos flights...', result: 'Found 4 options &mdash; Olympic Air &amp; Sky Express from <strong>&euro;45</strong>' },
+  { icon: 'ferry', title: 'Checking Piraeus to Milos ferries...', result: 'SeaJets high-speed 2h 35m from <strong>&euro;63</strong>' },
+  { icon: 'stay', title: 'Searching Milos accommodation (5 nights)...', result: 'Found 5 options &mdash; <strong>$118&ndash;321/night</strong>', interstitial: { type: '', title: 'Peak season alert', text: 'August 14&ndash;21 includes the Assumption of Mary (Aug 15), one of Greece\'s biggest holidays. Popular islands book out months in advance.' } },
+  { icon: 'ferry', title: 'Checking Milos to Koufonisia ferries...', result: 'SeaJets ~4h, limited schedule &mdash; <strong>check sailing days</strong>' },
+  { icon: 'stay', title: 'Searching Koufonisia accommodation (2 nights)...', result: 'Found 6 options &mdash; <strong>$85&ndash;194/night</strong>', interstitial: { type: 'red', title: 'Koufonisia is a tiny island', text: 'There are roughly 20 places to stay on the entire island. In August, they often sell out by March.' } },
+  { icon: 'ferry', title: 'Checking Koufonisia to Piraeus return ferries...', result: 'SeaJets Champion Jet, departs ~13:20 &mdash; <strong>&euro;42&ndash;85</strong>' },
+  { icon: 'flight', title: 'Searching Athens to London return flights...', result: 'Found 8 options from <strong>&euro;79</strong>' },
+  { icon: 'calc', title: 'Calculating costs per person...', result: 'London crew: <strong>&euro;700&ndash;1,500pp</strong> &middot; Athens crew: <strong>&euro;500&ndash;1,200pp</strong>', interstitial: { type: 'blue', title: 'This route is a great choice', text: 'Milos + Koufonisia gives you volcanic landscapes, secluded beaches, and one of the most authentic Small Cyclades islands.' } },
+  { icon: 'done', title: 'Building your itinerary...', result: '<strong>Your trip plan is ready!</strong>' }
+];
+
+function startResearch() {
+  var feed = document.getElementById('researchFeed');
+  feed.innerHTML = '';
+  document.getElementById('almostDone').style.display = 'none';
+
+  var stepIndex = 0;
+  var progressStart = 50;
+  var progressEnd = 100;
+
+  function addStep() {
+    if (stepIndex >= researchSteps.length) {
+      // All done
+      document.getElementById('almostDone').style.display = 'none';
+      setProgress(100);
+      setTimeout(function() {
+        goTo('itinerary');
+      }, 1200);
+      return;
+    }
+
+    var step = researchSteps[stepIndex];
+    var pct = progressStart + ((stepIndex / researchSteps.length) * (progressEnd - progressStart));
+    setProgress(Math.round(pct));
+
+    // Create card with spinner
+    var card = document.createElement('div');
+    card.className = 'research-card';
+    card.innerHTML =
+      '<div class="research-card__icon research-card__icon--' + step.icon + '">' + getIcon(step.icon) + '</div>' +
+      '<div class="research-card__body">' +
+        '<div class="research-card__title">' + step.title + '</div>' +
+        '<div class="research-card__result" style="display:none;"></div>' +
+      '</div>' +
+      '<div class="research-card__status"><div class="spinner"></div></div>';
+    feed.appendChild(card);
+    feed.scrollTop = feed.scrollHeight;
+
+    // After delay, show result
+    setTimeout(function() {
+      var resultEl = card.querySelector('.research-card__result');
+      resultEl.innerHTML = step.result;
+      resultEl.style.display = 'block';
+      card.querySelector('.research-card__status').innerHTML = '<div class="check-circle">&#10003;</div>';
+
+      // Add interstitial if present
+      if (step.interstitial) {
+        setTimeout(function() {
+          var inter = document.createElement('div');
+          inter.className = 'urgency-interstitial' + (step.interstitial.type ? ' urgency-interstitial--' + step.interstitial.type : '');
+          inter.innerHTML = '<h5>' + step.interstitial.title + '</h5><p>' + step.interstitial.text + '</p>';
+          feed.appendChild(inter);
+        }, 400);
+      }
+
+      // Show "almost done" at step 8
+      if (stepIndex === 7) {
+        document.getElementById('almostDone').style.display = 'block';
+      }
+
+      stepIndex++;
+      setTimeout(addStep, 800 + Math.random() * 1200);
+    }, 1200 + Math.random() * 800);
+  }
+
+  setTimeout(addStep, 600);
+}
+
+function getIcon(type) {
+  switch(type) {
+    case 'flight': return '&#9992;';
+    case 'ferry': return '&#9875;';
+    case 'stay': return '&#127968;';
+    case 'calc': return '&#128200;';
+    case 'done': return '&#10024;';
+    default: return '&#9679;';
+  }
+}
+
+// ===== ACCOMMODATION TOGGLES =====
+function toggleMore(section) {
+  var el = document.getElementById(section + 'More');
+  var btn = document.getElementById(section + 'Toggle');
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    btn.textContent = 'Show fewer options';
+  } else {
+    el.style.display = 'none';
+    btn.textContent = section === 'milos' ? 'Show 2 more options' : 'Show 3 more options';
+  }
+}
+
+// ===== COST TABS =====
+function showCostTab(tab, btnEl) {
+  document.querySelectorAll('.cost-tab').forEach(function(t) { t.classList.remove('active'); });
+  btnEl.classList.add('active');
+  document.getElementById('costLondon').style.display = tab === 'london' ? 'block' : 'none';
+  document.getElementById('costAthens').style.display = tab === 'athens' ? 'block' : 'none';
+}
+
+// ===== CHECKLIST =====
+function toggleCheck(el) {
+  var cb = el.querySelector('input[type="checkbox"]');
+  if (cb.checked) {
+    el.classList.add('done');
+  } else {
+    el.classList.remove('done');
+  }
+}
+
+// ===== SHARE MODAL =====
+function openShareModal() {
+  document.getElementById('shareModal').classList.add('active');
+}
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('active');
+}
+function copyLink() {
+  var btn = document.getElementById('copyLinkBtn');
+  // Simulate copy
+  btn.textContent = 'Copied!';
+  btn.style.borderColor = 'var(--success)';
+  btn.style.color = 'var(--success)';
+  setTimeout(function() {
+    btn.textContent = 'Copy link';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 2000);
+}
+function emailShare() {
+  window.location.href = 'mailto:?subject=Greece%202026%20-%20Milos%20%26%20Koufonisia&body=Here%27s%20our%20trip%20plan!%20Flights%2C%20ferries%2C%20accommodation%20all%20researched.%0A%0Ahttps%3A%2F%2Ftripforge.app%2Ftrip%2Fgreece2026';
+}
+
+// ===== REACTIONS =====
+function selectReaction(btn) {
+  document.querySelectorAll('.reaction-btn').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  document.getElementById('reactionResult').style.display = 'block';
+}
+
+// ===== COST CALCULATOR =====
+function selectCalcChip(chip, group) {
+  var parent = chip.parentElement;
+  parent.querySelectorAll('.calc-chip').forEach(function(c) { c.classList.remove('active'); });
+  chip.classList.add('active');
+  updateCalc();
+}
+
+function updateCalc() {
+  var originChips = document.querySelector('.cost-calculator .calc-field:first-child .calc-chips');
+  var sharingChips = document.querySelector('.cost-calculator .calc-field:nth-child(2) .calc-chips');
+  var origin = originChips.querySelector('.calc-chip.active').textContent;
+  var sharing = sharingChips.querySelector('.calc-chip.active').textContent;
+
+  var low = 500, high = 1200;
+  if (origin === 'London') { low = 700; high = 1500; }
+  else if (origin === 'Athens') { low = 500; high = 1200; }
+  else { low = 600; high = 1400; }
+
+  if (sharing === 'Solo room') { low = Math.round(low * 1.35); high = Math.round(high * 1.35); }
+
+  document.getElementById('calcAmount').innerHTML = '&euro;' + low + ' &ndash; ' + high.toLocaleString();
+}
+
+// ===== BUDGET PILL TOGGLE =====
+document.querySelectorAll('.budget-pill').forEach(function(pill) {
+  pill.addEventListener('click', function() {
+    document.querySelectorAll('.budget-pill').forEach(function(p) { p.classList.remove('active'); });
+    pill.classList.add('active');
+  });
+});
+
+// ===== INIT =====
+// Pre-fill the textarea with the Greece trip for demo
+tripInput.value = '3 couples from London and Athens, going to Milos and Koufonisia, August 14-21, mid-range budget';
+buildBtn.disabled = false;
+</script>
+
+</body>
+</html>

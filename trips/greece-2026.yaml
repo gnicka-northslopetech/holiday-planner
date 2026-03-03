@@ -1,0 +1,44 @@
+# Greece Summer 2026 — Trip Specification
+# This is the validation test case: the tool should produce output
+# comparable to /Users/gerinicka-new/greece-trip-2026.html
+
+title: "Greece 2026"
+
+origins:
+  - city: London
+    country: GB
+    airport_code: LON
+    num_travelers: 4
+    label: "London crew"
+  - city: Athens
+    country: GR
+    airport_code: ATH
+    num_travelers: 2
+    label: "Athens crew"
+
+hub_city: Athens
+hub_airport: ATH
+
+stops:
+  - island: Milos
+    nights: 5
+    port_code: MLO
+    airport_code: MLO
+    needs_car: true
+    notes: "Sarakiniko, Kleftiko boat tour, Plaka sunset"
+  - island: Koufonisia
+    nights: 2
+    port_code: KOF
+    airport_code: ""
+    needs_car: false
+    notes: "Tiny island, walk everywhere, Pori beach"
+
+start_date: "2026-08-14"
+end_date: "2026-08-21"
+total_travelers: 6
+group_description: "3 couples"
+budget_notes: "Mid-range, not backpacker but not luxury"
+preferences:
+  - "Beach-focused"
+  - "Good food"
+  - "Mix of activity and relaxation"

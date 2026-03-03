@@ -1,0 +1,122 @@
+{
+  "Milos": {
+    "name": "Milos",
+    "airport_code": "MLO",
+    "port_code": "MLO",
+    "port_name": "Adamas",
+    "needs_car": true,
+    "description": "Volcanic island known for Sarakiniko, Kleftiko, and colorful fishing villages"
+  },
+  "Koufonisia": {
+    "name": "Koufonisia",
+    "airport_code": "",
+    "port_code": "KOF",
+    "port_name": "Ano Koufonisi",
+    "needs_car": false,
+    "description": "Tiny Small Cyclades island with crystal waters, walkable, ~20 accommodations total"
+  },
+  "Santorini": {
+    "name": "Santorini",
+    "airport_code": "JTR",
+    "port_code": "SAN",
+    "port_name": "Athinios",
+    "needs_car": false,
+    "description": "Iconic caldera views, Oia sunset, wine tours"
+  },
+  "Mykonos": {
+    "name": "Mykonos",
+    "airport_code": "JMK",
+    "port_code": "MYK",
+    "port_name": "New Port",
+    "needs_car": false,
+    "description": "Cosmopolitan nightlife, beaches, Little Venice"
+  },
+  "Naxos": {
+    "name": "Naxos",
+    "airport_code": "JNX",
+    "port_code": "NAX",
+    "port_name": "Naxos Town",
+    "needs_car": true,
+    "description": "Largest Cycladic island, long sandy beaches, mountain villages"
+  },
+  "Paros": {
+    "name": "Paros",
+    "airport_code": "",
+    "port_code": "PAR",
+    "port_name": "Parikia",
+    "needs_car": true,
+    "description": "Naoussa village, windsurfing, traditional Cycladic charm"
+  },
+  "Ios": {
+    "name": "Ios",
+    "airport_code": "",
+    "port_code": "IOS",
+    "port_name": "Ios Port",
+    "needs_car": false,
+    "description": "Party island with beautiful Mylopotas beach"
+  },
+  "Sifnos": {
+    "name": "Sifnos",
+    "airport_code": "",
+    "port_code": "SIF",
+    "port_name": "Kamares",
+    "needs_car": true,
+    "description": "Foodie island, pottery, hiking trails between villages"
+  },
+  "Serifos": {
+    "name": "Serifos",
+    "airport_code": "",
+    "port_code": "SER",
+    "port_name": "Livadi",
+    "needs_car": true,
+    "description": "Rugged, unspoiled island with hilltop Chora"
+  },
+  "Folegandros": {
+    "name": "Folegandros",
+    "airport_code": "",
+    "port_code": "FOL",
+    "port_name": "Karavostasis",
+    "needs_car": false,
+    "description": "Dramatic cliffs, romantic Chora, uncrowded"
+  },
+  "Amorgos": {
+    "name": "Amorgos",
+    "airport_code": "",
+    "port_code": "AMO",
+    "port_name": "Katapola",
+    "needs_car": true,
+    "description": "Remote eastern Cyclades, monastery, Le Grand Bleu filming location"
+  },
+  "Rhodes": {
+    "name": "Rhodes",
+    "airport_code": "RHO",
+    "port_code": "",
+    "port_name": "Rhodes Port",
+    "needs_car": true,
+    "description": "Medieval old town, Lindos, long beaches"
+  },
+  "Crete": {
+    "name": "Crete",
+    "airport_code": "HER",
+    "port_code": "",
+    "port_name": "Heraklion",
+    "needs_car": true,
+    "description": "Largest Greek island — Knossos, Samaria Gorge, Elafonisi"
+  },
+  "Corfu": {
+    "name": "Corfu",
+    "airport_code": "CFU",
+    "port_code": "",
+    "port_name": "Corfu Port",
+    "needs_car": true,
+    "description": "Venetian old town, lush green landscapes, Paleokastritsa"
+  },
+  "Hydra": {
+    "name": "Hydra",
+    "airport_code": "",
+    "port_code": "HYD",
+    "port_name": "Hydra Port",
+    "needs_car": false,
+    "description": "Car-free island, donkeys, art galleries, Athens day trip"
+  }
+}

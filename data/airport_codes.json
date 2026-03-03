@@ -1,0 +1,20 @@
+{
+  "ATH": {"code": "ATH", "name": "Athens International", "city": "Athens", "country": "GR"},
+  "MLO": {"code": "MLO", "name": "Milos Airport", "city": "Milos", "country": "GR"},
+  "JNX": {"code": "JNX", "name": "Naxos Airport", "city": "Naxos", "country": "GR"},
+  "JTR": {"code": "JTR", "name": "Santorini Airport", "city": "Santorini", "country": "GR"},
+  "JMK": {"code": "JMK", "name": "Mykonos Airport", "city": "Mykonos", "country": "GR"},
+  "SMI": {"code": "SMI", "name": "Samos Airport", "city": "Samos", "country": "GR"},
+  "RHO": {"code": "RHO", "name": "Rhodes Airport", "city": "Rhodes", "country": "GR"},
+  "KGS": {"code": "KGS", "name": "Kos Airport", "city": "Kos", "country": "GR"},
+  "CFU": {"code": "CFU", "name": "Corfu Airport", "city": "Corfu", "country": "GR"},
+  "CHQ": {"code": "CHQ", "name": "Chania Airport", "city": "Crete (Chania)", "country": "GR"},
+  "HER": {"code": "HER", "name": "Heraklion Airport", "city": "Crete (Heraklion)", "country": "GR"},
+  "ZTH": {"code": "ZTH", "name": "Zakynthos Airport", "city": "Zakynthos", "country": "GR"},
+  "SKG": {"code": "SKG", "name": "Thessaloniki Airport", "city": "Thessaloniki", "country": "GR"},
+  "LON": {"code": "LON", "name": "London (all airports)", "city": "London", "country": "GB"},
+  "LHR": {"code": "LHR", "name": "London Heathrow", "city": "London", "country": "GB"},
+  "LGW": {"code": "LGW", "name": "London Gatwick", "city": "London", "country": "GB"},
+  "STN": {"code": "STN", "name": "London Stansted", "city": "London", "country": "GB"},
+  "LTN": {"code": "LTN", "name": "London Luton", "city": "London", "country": "GB"}
+}

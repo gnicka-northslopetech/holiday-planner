@@ -1,0 +1,23 @@
+{
+  "PIR": {"code": "PIR", "name": "Piraeus", "island": "Athens", "notes": "Main port for Athens"},
+  "RAF": {"code": "RAF", "name": "Rafina", "island": "Athens", "notes": "Alternative Athens port, closer to airport"},
+  "LAV": {"code": "LAV", "name": "Lavrio", "island": "Athens", "notes": "Southern Athens port"},
+  "MLO": {"code": "MLO", "name": "Adamas", "island": "Milos", "notes": "Main port of Milos"},
+  "KOF": {"code": "KOF", "name": "Koufonisia", "island": "Koufonisia", "notes": "Ano Koufonisi port"},
+  "NAX": {"code": "NAX", "name": "Naxos", "island": "Naxos"},
+  "PAR": {"code": "PAR", "name": "Parikia", "island": "Paros"},
+  "ANP": {"code": "ANP", "name": "Antiparos", "island": "Antiparos"},
+  "IOS": {"code": "IOS", "name": "Ios", "island": "Ios"},
+  "SAN": {"code": "SAN", "name": "Santorini (Athinios)", "island": "Santorini"},
+  "MYK": {"code": "MYK", "name": "Mykonos (New Port)", "island": "Mykonos"},
+  "SYR": {"code": "SYR", "name": "Syros (Ermoupoli)", "island": "Syros"},
+  "SIF": {"code": "SIF", "name": "Sifnos (Kamares)", "island": "Sifnos"},
+  "SER": {"code": "SER", "name": "Serifos (Livadi)", "island": "Serifos"},
+  "FOL": {"code": "FOL", "name": "Folegandros (Karavostasis)", "island": "Folegandros"},
+  "AMO": {"code": "AMO", "name": "Amorgos (Katapola)", "island": "Amorgos"},
+  "DON": {"code": "DON", "name": "Donousa", "island": "Donousa"},
+  "SCH": {"code": "SCH", "name": "Schinoussa", "island": "Schinoussa"},
+  "IRK": {"code": "IRK", "name": "Iraklia", "island": "Iraklia"},
+  "HYD": {"code": "HYD", "name": "Hydra", "island": "Hydra"},
+  "SPE": {"code": "SPE", "name": "Spetses", "island": "Spetses"}
+}
