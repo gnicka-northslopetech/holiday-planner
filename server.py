@@ -11,7 +11,7 @@ from typing import Any
 
 import yaml
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from config import ANTHROPIC_API_KEY
@@ -32,7 +32,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 app = FastAPI(title="TripForge")
 
 PROJECT_ROOT = Path(__file__).parent
-HTML_PATH = PROJECT_ROOT / "prototypes" / "option-a-wanderlust.html"
 TRIPS_DIR = PROJECT_ROOT / "trips"
 
 
@@ -46,12 +45,6 @@ def _json_serial(obj: Any) -> Any:
 
 
 # ── Endpoints ──
-
-
-@app.get("/")
-async def serve_html():
-    """Serve the Wanderlust prototype HTML."""
-    return FileResponse(HTML_PATH, media_type="text/html")
 
 
 @app.get("/api/default-spec")
@@ -102,13 +95,16 @@ async def api_research(req: ResearchRequest):
             nonlocal done_count
             log.info("START  %s", name)
             try:
-                results[name] = await coro
+                results[name] = await asyncio.wait_for(coro, timeout=25)
                 # Summarize result
                 r = results[name]
                 if isinstance(r, list):
                     log.info("DONE   %s → %d results", name, len(r))
                 else:
                     log.info("DONE   %s → %s", name, type(r).__name__)
+            except asyncio.TimeoutError:
+                log.warning("TIMEOUT %s after 25s — using empty result", name)
+                results[name] = []
             except Exception as e:
                 log.error("FAIL   %s → %s", name, e)
                 results[name] = str(e)
@@ -135,12 +131,17 @@ async def api_research(req: ResearchRequest):
         await asyncio.gather(*tasks)
 
         # Build itinerary
-        itinerary = _build_itinerary(spec, results)
-        itin_json = json.dumps(
-            json.loads(itinerary.model_dump_json()),
-            default=_json_serial,
-        )
-        yield f"event: complete\ndata: {itin_json}\n\n"
+        try:
+            itinerary = _build_itinerary(spec, results)
+            itin_json = json.dumps(
+                json.loads(itinerary.model_dump_json()),
+                default=_json_serial,
+            )
+            yield f"event: complete\ndata: {itin_json}\n\n"
+        except Exception as e:
+            log.error("Failed to build itinerary: %s", e)
+            error_json = json.dumps({"error": str(e)})
+            yield f"event: error\ndata: {error_json}\n\n"
 
     return StreamingResponse(
         event_stream(),

@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TripForge - Greek Island Trip Planner</title>
+<meta property="og:title" content="Greece 2026 - Milos & Koufonisia">
+<meta property="og:description" content="Aug 14-21, 2026 . 3 couples . Flights, ferries, accommodation & costs">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== CSS VARIABLES ========== */
+:root {
+  --white: #FFFFFF;
+  --sand: #FAF7F2;
+  --sand-dark: #F0EBE3;
+  --stone: #E8E2D9;
+  --ink: #1A1A1A;
+  --ink-secondary: #6B6560;
+  --ink-tertiary: #A39E97;
+  --aegean: #1E6B8A;
+  --aegean-light: #E8F4F8;
+  --aegean-hover: #175A75;
+  --sunset: #E07A4F;
+  --sunset-light: #FFF0E8;
+  --sunset-hover: #C96A42;
+  --sea: #2D9B83;
+  --sea-light: #E6F7F3;
+  --badge-flight-bg: #E8F4F8;
+  --badge-flight-fg: #1E6B8A;
+  --badge-ferry-bg: #E6F7F3;
+  --badge-ferry-fg: #1B7A62;
+  --badge-taxi-bg: #FFF6E8;
+  --badge-taxi-fg: #9A7320;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--sand);
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ========== SCREEN MANAGEMENT ========== */
+.screen {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.screen.active {
+  display: block;
+  opacity: 1;
+}
+
+/* ========== COMMON ========== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-flight { background: var(--badge-flight-bg); color: var(--badge-flight-fg); }
+.badge-ferry { background: var(--badge-ferry-bg); color: var(--badge-ferry-fg); }
+.badge-taxi { background: var(--badge-taxi-bg); color: var(--badge-taxi-fg); }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+}
+.btn-primary:hover { background: #333; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary svg { width: 18px; height: 18px; transition: transform 0.15s ease; }
+.btn-primary:hover svg { transform: translateX(3px); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--white);
+  color: var(--ink);
+  border: 1.5px solid var(--stone);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-decoration: none;
+}
+.btn-secondary:hover { border-color: var(--ink-secondary); background: var(--sand); }
+
+/* ============================================================
+   SCREEN 1: LANDING
+   ============================================================ */
+.landing-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  overflow: hidden;
+}
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, #1a6985 0%, #2a96a5 30%, #4ab5b0 50%, #78c9a0 70%, #c9a96e 100%);
+  z-index: 0;
+}
+.landing-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(26,26,26,0.15) 0%, rgba(26,26,26,0.35) 60%, rgba(26,26,26,0.65) 100%);
+  z-index: 1;
+}
+.landing-hero > * { position: relative; z-index: 2; }
+
+.landing-logo {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 24px;
+}
+.landing-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.1;
+  color: #FFFFFF;
+  max-width: 480px;
+  margin-bottom: 16px;
+}
+.landing-subhead {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.8);
+  max-width: 400px;
+  margin-bottom: 32px;
+}
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: var(--white);
+  color: var(--ink);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.landing-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+.landing-cta svg { width: 18px; height: 18px; transition: transform 0.15s ease; }
+.landing-cta:hover svg { transform: translateX(3px); }
+.landing-fine-print { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 16px; }
+
+/* How it works */
+.how-it-works {
+  background: var(--sand);
+  padding: 64px 24px;
+}
+.how-it-works h2 {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink-tertiary);
+  text-align: center;
+  margin-bottom: 40px;
+}
+.how-it-works-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.how-step { display: flex; gap: 20px; align-items: flex-start; }
+.how-step-number {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--aegean);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.how-step-title { font-weight: 600; font-size: 1rem; color: var(--ink); margin-bottom: 4px; }
+.how-step-body { font-size: 0.9375rem; color: var(--ink-secondary); line-height: 1.5; }
+
+.landing-bottom-cta {
+  background: var(--white);
+  text-align: center;
+  padding: 48px 24px;
+  border-top: 1px solid var(--stone);
+}
+.landing-bottom-cta p {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--ink-secondary);
+  max-width: 380px;
+  margin: 0 auto 24px;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   SCREEN 2: BRIEF INPUT
+   ============================================================ */
+.brief-screen { background: var(--white); min-height: 100vh; padding-bottom: 80px; }
+.brief-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--stone);
+}
+.brief-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.brief-back:hover { color: var(--ink); }
+.brief-logo { font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-tertiary); }
+.brief-content { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
+.brief-title { font-family: var(--font-display); font-size: 1.75rem; color: var(--ink); margin-bottom: 8px; }
+.brief-subtitle { font-size: 0.9375rem; color: var(--ink-secondary); margin-bottom: 32px; line-height: 1.5; }
+
+.brief-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 20px;
+  border: 1.5px solid var(--stone);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--white);
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.brief-textarea:focus { outline: none; border-color: var(--aegean); box-shadow: 0 0 0 3px var(--aegean-light); }
+.brief-textarea::placeholder { color: var(--ink-tertiary); font-style: italic; }
+
+.brief-char-count { text-align: right; font-size: 0.75rem; color: var(--ink-tertiary); margin-top: 8px; }
+
+.brief-hints { margin-top: 24px; }
+.brief-hints-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--ink-tertiary);
+  margin-bottom: 12px;
+}
+.brief-hints ul { list-style: none; }
+.brief-hints li {
+  font-size: 0.875rem;
+  color: var(--ink-secondary);
+  padding: 4px 0 4px 16px;
+  position: relative;
+}
+.brief-hints li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--stone);
+}
+
+.brief-submit-area { margin-top: 32px; text-align: center; }
+
+.brief-examples { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--stone); }
+.brief-examples-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink-tertiary);
+  margin-bottom: 12px;
+}
+.brief-example {
+  padding: 12px 16px;
+  background: var(--sand);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.brief-example:hover { border-color: var(--aegean); }
+
+/* ============================================================
+   SCREEN 3: CONFIRMATION
+   ============================================================ */
+.confirm-screen { background: var(--sand); min-height: 100vh; padding-bottom: 80px; }
+.confirm-content { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
+.confirm-title { font-family: var(--font-display); font-size: 1.75rem; color: var(--ink); margin-bottom: 8px; }
+.confirm-subtitle { font-size: 0.9375rem; color: var(--ink-secondary); line-height: 1.5; margin-bottom: 32px; }
+
+.confirm-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--stone);
+}
+.confirm-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--stone);
+  position: relative;
+}
+.confirm-section:last-child { border-bottom: none; }
+.confirm-section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--ink-tertiary);
+  margin-bottom: 8px;
+}
+.confirm-section-value { font-size: 1rem; font-weight: 500; color: var(--ink); line-height: 1.5; }
+.confirm-section-detail { font-size: 0.875rem; color: var(--ink-secondary); margin-top: 4px; }
+.confirm-edit-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--stone);
+  background: var(--white);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.confirm-edit-btn:hover { border-color: var(--aegean); color: var(--aegean); }
+
+/* Route visualization */
+.route-leg { display: flex; align-items: flex-start; gap: 16px; padding: 6px 0; }
+.route-line { display: flex; flex-direction: column; align-items: center; width: 24px; flex-shrink: 0; }
+.route-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--aegean); flex-shrink: 0; }
+.route-dot.island { width: 14px; height: 14px; background: var(--sunset); }
+.route-connector { width: 2px; height: 28px; background: var(--stone); }
+.route-connector.dashed {
+  background: repeating-linear-gradient(to bottom, var(--stone) 0px, var(--stone) 4px, transparent 4px, transparent 8px);
+}
+.route-leg-info { flex: 1; }
+.route-place-name { font-weight: 600; font-size: 0.9375rem; color: var(--ink); }
+.route-place-meta { font-size: 0.8125rem; color: var(--ink-secondary); margin-top: 2px; }
+.route-transport-label { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--ink-tertiary); margin-top: 2px; }
+
+.confirm-actions { margin-top: 32px; text-align: center; }
+.confirm-back-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 0.875rem;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+}
+.confirm-back-link:hover { color: var(--ink); }
+
+/* ============================================================
+   SCREEN 3.5: PREFERENCES
+   ============================================================ */
+.prefs-screen { background: var(--sand); min-height: 100vh; display: flex; flex-direction: column; }
+.prefs-content { max-width: 560px; margin: 0 auto; padding: 20px 20px 0; flex: 1; display: flex; flex-direction: column; width: 100%; }
+.prefs-progress-bar { display: flex; gap: 6px; margin-bottom: 24px; }
+.prefs-progress-seg { flex: 1; height: 4px; border-radius: 2px; background: var(--stone); transition: background 0.3s ease; }
+.prefs-progress-seg.done { background: var(--aegean); }
+.prefs-progress-seg.active { background: var(--aegean); opacity: 0.5; }
+
+.prefs-chat { flex: 1; overflow-y: auto; padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.prefs-message {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  animation: prefSlideIn 0.3s ease;
+}
+@keyframes prefSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.prefs-message.system {
+  align-self: flex-start;
+  background: var(--white);
+  color: var(--ink);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.prefs-message.user {
+  align-self: flex-end;
+  background: var(--aegean);
+  color: var(--white);
+  border-bottom-right-radius: 4px;
+}
+
+.prefs-chips { display: flex; flex-wrap: wrap; gap: 8px; animation: prefSlideIn 0.3s ease; }
+.prefs-chip {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--stone);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-body);
+}
+.prefs-chip:hover { border-color: var(--aegean); color: var(--aegean); background: var(--aegean-light); }
+
+.prefs-input-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--sand);
+  padding: 12px 0 24px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  max-width: 560px;
+  margin: 0 auto;
+  width: 100%;
+}
+.prefs-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1.5px solid var(--stone);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.prefs-input:focus { border-color: var(--aegean); }
+.prefs-send-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  color: var(--white);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+.prefs-send-btn:hover { background: var(--aegean); }
+.prefs-send-btn:disabled { background: var(--stone); cursor: default; }
+
+.prefs-summary-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-top: 12px;
+  animation: prefSlideIn 0.3s ease;
+}
+.prefs-summary-card p { font-size: 0.9375rem; line-height: 1.6; color: var(--ink); }
+.prefs-summary-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 20px; }
+.prefs-skip { color: var(--ink-secondary); font-size: 0.875rem; text-decoration: none; cursor: pointer; border: none; background: none; font-family: var(--font-body); }
+.prefs-skip:hover { color: var(--ink); }
+
+/* ============================================================
+   SCREEN 4: LOADING
+   ============================================================ */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  z-index: 200;
+}
+.loading-screen.active { display: flex; }
+
+.loading-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1a5a70 0%, #1e7a6a 30%, #3a8870 50%, #7aaa65 70%, #c9a040 100%);
+  z-index: 0;
+}
+.loading-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+}
+.loading-screen > *:not(.loading-bg) { position: relative; z-index: 1; }
+
+.loading-dots { display: flex; gap: 8px; margin-bottom: 32px; }
+.loading-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background 0.5s ease, transform 0.3s ease;
+}
+.loading-dot.active { background: var(--white); transform: scale(1.25); }
+.loading-dot.complete { background: var(--sea); }
+
+.loading-headline { font-family: var(--font-body); font-size: 0.875rem; font-weight: 400; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+.loading-destination { font-family: var(--font-display); font-size: 1.75rem; color: #fff; margin-bottom: 40px; }
+
+.loading-steps {
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: left;
+}
+.loading-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.35);
+  transition: color 0.3s ease;
+}
+.loading-step.active { color: rgba(255,255,255,0.95); }
+.loading-step.complete { color: rgba(255,255,255,0.6); }
+
+.loading-step-icon {
+  width: 20px; height: 20px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.loading-step.complete .loading-step-icon::after {
+  content: '';
+  width: 7px; height: 12px;
+  border: 2px solid var(--sea);
+  border-top: none; border-left: none;
+  transform: rotate(45deg) translateY(-2px);
+}
+.loading-step.active .loading-step-icon::after {
+  content: '';
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.loading-step.pending .loading-step-icon::after {
+  content: '';
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+.loading-fact {
+  max-width: 340px;
+  margin-top: 40px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.5);
+  min-height: 60px;
+  transition: opacity 0.4s ease;
+}
+.loading-fact strong { color: rgba(255,255,255,0.75); }
+
+.loading-ready {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.loading-ready.show { display: flex; }
+.loading-checkmark {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--sea);
+  display: flex; align-items: center; justify-content: center;
+  animation: scaleIn 0.4s ease;
+}
+@keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+.loading-checkmark svg { width: 28px; height: 28px; color: #fff; }
+.loading-ready-text { font-family: var(--font-display); font-size: 1.5rem; color: #fff; }
+
+/* ============================================================
+   SCREEN 5: ITINERARY RESULTS
+   ============================================================ */
+.itin-hero {
+  position: relative;
+  padding: 80px 24px 48px;
+  text-align: center;
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+.itin-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1a6985 0%, #2a96a5 30%, #5ab8a8 50%, #a0c895 70%, #d4b06a 100%);
+  z-index: 0;
+}
+.itin-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(250,247,242,0) 0%, rgba(250,247,242,0.3) 40%, rgba(250,247,242,0.85) 70%, rgba(250,247,242,1) 100%);
+  z-index: 1;
+}
+.itin-hero > * { position: relative; z-index: 2; }
+.itin-hero-title { font-family: var(--font-display); font-size: clamp(2rem, 5vw, 2.75rem); color: var(--ink); margin-bottom: 4px; }
+.itin-hero-subtitle { font-family: var(--font-display); font-size: 1.25rem; color: var(--ink-secondary); margin-bottom: 16px; }
+.itin-hero-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: var(--white);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  box-shadow: var(--shadow-sm);
+}
+.itin-route-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  padding: 0 16px;
+}
+.itin-route-stop {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--white);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+.itin-route-stop.island { background: var(--sunset-light); color: var(--sunset); }
+.itin-route-arrow { color: var(--ink-tertiary); font-size: 0.75rem; padding: 0 6px; }
+
+.itin-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 20px 140px;
+  background: var(--sand);
+}
+
+.itin-section { margin: 40px 0; }
+.itin-section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink-tertiary);
+  margin-bottom: 16px;
+  padding-left: 4px;
+}
+
+.itin-day-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--stone);
+  border-left: 4px solid var(--aegean);
+}
+.itin-day-card.highlight {
+  border-left-color: var(--sunset);
+  background: linear-gradient(135deg, var(--white) 0%, var(--sunset-light) 100%);
+}
+.itin-day-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ink-tertiary);
+  margin-bottom: 4px;
+}
+.itin-day-title { font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-bottom: 4px; }
+.itin-day-subtitle { font-size: 0.8125rem; font-weight: 500; color: var(--aegean); margin-bottom: 16px; }
+.itin-day-card.highlight .itin-day-subtitle { color: var(--sunset); }
+
+.itin-transport {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--stone);
+}
+.itin-transport:last-of-type { border-bottom: none; }
+.itin-transport-badge { flex-shrink: 0; margin-top: 2px; }
+.itin-transport-info { flex: 1; }
+.itin-transport-route { font-size: 0.9375rem; font-weight: 500; color: var(--ink); }
+.itin-transport-detail { font-size: 0.8125rem; color: var(--ink-secondary); margin-top: 2px; line-height: 1.5; }
+
+.itin-highlights { list-style: none; padding: 0; margin: 12px 0 0; }
+.itin-highlights li {
+  padding: 5px 0 5px 20px;
+  position: relative;
+  font-size: 0.875rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+}
+.itin-highlights li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sunset);
+}
+
+.itin-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--sunset-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-size: 0.8125rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+}
+.itin-note-icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+.itin-note strong { color: var(--ink); }
+
+/* Accommodation cards */
+.itin-accommodation-card {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+.itin-accommodation-card:hover { box-shadow: var(--shadow-md); border-color: var(--aegean); }
+.itin-acc-info { flex: 1; min-width: 0; }
+.itin-acc-name { font-size: 0.9375rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.itin-acc-location { font-size: 0.8125rem; color: var(--ink-secondary); }
+.itin-acc-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sunset);
+  margin-top: 4px;
+}
+.itin-acc-price { flex-shrink: 0; text-align: right; }
+.itin-acc-price-amount { font-size: 1.125rem; font-weight: 700; color: var(--ink); }
+.itin-acc-price-meta { font-size: 0.6875rem; color: var(--ink-tertiary); margin-top: 2px; }
+
+/* Cost table */
+.itin-cost-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--stone);
+}
+.itin-cost-table { width: 100%; border-collapse: collapse; }
+.itin-cost-table tr { border-bottom: 1px solid var(--stone); }
+.itin-cost-table td { padding: 12px 0; font-size: 0.875rem; vertical-align: top; }
+.itin-cost-table td:first-child { color: var(--ink-secondary); padding-right: 16px; }
+.itin-cost-table td:last-child { text-align: right; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.itin-cost-table tr.total { border-bottom: none; }
+.itin-cost-table tr.total td { padding-top: 16px; font-size: 1rem; font-weight: 700; color: var(--aegean); border-top: 2px solid var(--aegean); }
+
+/* Urgency actions */
+.itin-action {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px 20px;
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+.itin-action-number {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--aegean);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.itin-action-content { flex: 1; }
+.itin-action-title { font-size: 0.9375rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.itin-action-reason { font-size: 0.8125rem; color: var(--ink-secondary); line-height: 1.4; margin-bottom: 8px; }
+.itin-action-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.itin-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--aegean-light);
+  color: var(--aegean);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.itin-action-link:hover { background: #D0E8F0; }
+
+/* Useful links grid */
+.itin-links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.itin-link-card {
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-decoration: none;
+  transition: box-shadow 0.2s ease;
+  display: block;
+}
+.itin-link-card:hover { box-shadow: var(--shadow-md); }
+.itin-link-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink-tertiary);
+  margin-bottom: 4px;
+}
+.itin-link-name { font-size: 0.9rem; font-weight: 600; color: var(--aegean); }
+
+/* Sticky bar */
+.itin-sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--stone);
+  padding: 12px 20px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+}
+.itin-sticky-bar.visible { display: flex; }
+.itin-sticky-cost { font-size: 0.8125rem; color: var(--ink-secondary); line-height: 1.3; }
+.itin-sticky-cost strong { display: block; font-size: 1.125rem; font-weight: 700; color: var(--ink); }
+.itin-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.itin-share-btn:hover { background: #333; }
+
+.itin-footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-tertiary);
+  font-size: 0.8rem;
+}
+
+/* ============================================================
+   SCREEN 6: SHARE SHEET
+   ============================================================ */
+.share-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,26,0.4);
+  z-index: 300;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.share-overlay.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.share-sheet {
+  background: var(--white);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 28px 24px 40px;
+  width: 100%;
+  max-width: 500px;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.share-sheet-title { font-family: var(--font-display); font-size: 1.25rem; color: var(--ink); margin-bottom: 20px; text-align: center; }
+
+.share-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--stone);
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: var(--white);
+  transition: background 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-body);
+}
+.share-option:hover { background: var(--sand); border-color: var(--ink-secondary); }
+.share-option.whatsapp { border-color: #25D366; }
+.share-option.whatsapp:hover { background: #E8F8EE; }
+
+.share-option-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+}
+.share-option-icon.wa-icon { background: #25D366; color: white; }
+.share-option-icon.copy-icon { background: var(--sand); color: var(--ink-secondary); }
+
+.share-option-text { flex: 1; }
+.share-option-label { font-size: 0.9375rem; font-weight: 600; color: var(--ink); }
+.share-option-desc { font-size: 0.8125rem; color: var(--ink-secondary); margin-top: 1px; }
+
+.share-preview {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--sand);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+.share-preview-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink-tertiary);
+  margin-bottom: 8px;
+}
+
+.share-cancel {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  text-align: center;
+  margin-top: 8px;
+  border-radius: var(--radius-md);
+}
+.share-cancel:hover { background: var(--sand); }
+
+/* ============================================================
+   SCREEN 7: RECIPIENT VIEW
+   ============================================================ */
+.itin-attribution {
+  text-align: center;
+  padding: 16px 20px;
+  background: var(--white);
+  border-bottom: 1px solid var(--stone);
+  font-size: 0.8125rem;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+}
+.itin-attribution strong { color: var(--ink); }
+.itin-attribution .tf-link { color: var(--aegean); text-decoration: none; font-weight: 600; }
+
+.recipient-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--aegean);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.recipient-cta-btn:hover { background: var(--aegean-hover); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .itin-hero { min-height: 280px; padding: 60px 16px 32px; }
+  .itin-hero-title { font-size: 1.75rem; }
+  .itin-container { padding: 0 16px 120px; }
+  .itin-day-card { padding: 20px 16px; }
+  .itin-accommodation-card { flex-direction: column; align-items: flex-start; }
+  .itin-acc-price { text-align: left; margin-top: 8px; display: flex; align-items: baseline; gap: 8px; }
+  .itin-acc-price-meta { margin-top: 0; }
+  .itin-route-stop { font-size: 0.75rem; padding: 4px 8px; }
+  .itin-links-grid { grid-template-columns: 1fr; }
+  .landing-hero { min-height: 85vh; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SCREEN 1: LANDING
+     ============================================================ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-hero">
+    <div class="landing-logo">TRIPFORGE</div>
+    <h1 class="landing-headline">Your Greek island trip, planned in 60 seconds.</h1>
+    <p class="landing-subhead">Tell us about your trip in plain English. We'll find the flights, ferries, and places to stay &mdash; and build a page you can share with your group.</p>
+    <button class="landing-cta" onclick="goToScreen('brief')">
+      Start planning
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+    <p class="landing-fine-print">No account needed. Free while in beta.</p>
+  </div>
+
+  <div class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="how-it-works-grid">
+      <div class="how-step">
+        <div class="how-step-number">1</div>
+        <div>
+          <div class="how-step-title">Describe your trip</div>
+          <div class="how-step-body">"3 couples from London, Milos + Koufonisia, mid-August, 7 nights"</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-number">2</div>
+        <div>
+          <div class="how-step-title">We do the research</div>
+          <div class="how-step-body">Flights, ferries, accommodation, costs &mdash; all assembled in 60 seconds</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-step-number">3</div>
+        <div>
+          <div class="how-step-title">Share one beautiful page</div>
+          <div class="how-step-body">Drop it in your group chat. Everyone sees the plan, the prices, the links to book.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="landing-bottom-cta">
+    <p>"Made for the person who does all the research so everyone else doesn't have to."</p>
+    <button class="landing-cta" onclick="goToScreen('brief')" style="background:var(--ink);color:var(--white);">
+      Start planning
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2: BRIEF INPUT
+     ============================================================ -->
+<div id="screen-brief" class="screen">
+  <div class="brief-screen">
+    <div class="brief-header">
+      <button class="brief-back" onclick="goToScreen('landing')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <span class="brief-logo">TRIPFORGE</span>
+    </div>
+    <div class="brief-content">
+      <h1 class="brief-title">Tell us about your trip</h1>
+      <p class="brief-subtitle">Write it however you like &mdash; the way you'd describe it to a friend.</p>
+
+      <textarea id="briefText" class="brief-textarea" placeholder='e.g. "3 couples. 4 of us are flying from London, 2 already in Athens. We want to do Milos (5 nights) then Koufonisia (2 nights) around mid-August 2026. Mid-range budget. Beach-focused, good food, mix of activity and relaxation."'></textarea>
+      <div class="brief-char-count" id="charCount"></div>
+
+      <div class="brief-hints">
+        <div class="brief-hints-label">Helpful to include</div>
+        <ul>
+          <li>How many people and where they're flying from</li>
+          <li>Which islands (and in what order, if you have a preference)</li>
+          <li>Dates or at least time of year</li>
+          <li>How many nights per island</li>
+          <li>Budget range, vibe, any preferences</li>
+        </ul>
+      </div>
+
+      <div class="brief-submit-area">
+        <button id="briefSubmit" class="btn-primary" disabled onclick="submitBrief()">
+          Build my trip
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <div class="brief-examples">
+        <div class="brief-examples-label">Examples you can try</div>
+        <div class="brief-example" onclick="fillExample(this)">3 couples. 4 of us are flying from London, 2 already in Athens. We want to do Milos (5 nights) then Koufonisia (2 nights) around mid-August 2026. Mid-range budget. Beach-focused, good food, mix of activity and relaxation.</div>
+        <div class="brief-example" onclick="fillExample(this)">London to Santorini + Milos, 5 people, Sep 10-18, apartments with a pool</div>
+        <div class="brief-example" onclick="fillExample(this)">Couple from Berlin, island hopping Paros, Naxos, Koufonisia, late July, 10 days, mid-budget</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3: CONFIRMATION
+     ============================================================ -->
+<div id="screen-confirm" class="screen">
+  <div class="confirm-screen">
+    <div class="brief-header">
+      <button class="brief-back" onclick="goToScreen('brief')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Edit brief
+      </button>
+      <span class="brief-logo">TRIPFORGE</span>
+    </div>
+    <div class="confirm-content">
+      <h1 class="confirm-title">Here's what we understood</h1>
+      <p class="confirm-subtitle">Check the details, then we'll find flights, ferries, and places to stay.</p>
+
+      <div class="confirm-card" id="confirmCard"></div>
+
+      <div class="confirm-actions">
+        <button class="btn-primary" onclick="startResearch()">
+          Looks good &mdash; find options
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <br>
+        <button class="confirm-back-link" onclick="goToScreen('brief')">Go back and edit the brief</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3.5: PREFERENCES
+     ============================================================ -->
+<div id="screen-preferences" class="screen">
+  <div class="prefs-screen">
+    <div class="brief-header">
+      <button class="brief-back" onclick="goToScreen('confirm')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <span class="brief-logo">TRIPFORGE</span>
+    </div>
+    <div class="prefs-content">
+      <div class="prefs-progress-bar" id="prefsProgressBar"></div>
+      <div class="prefs-chat" id="prefsChat"></div>
+    </div>
+    <div class="prefs-input-bar" id="prefsInputBar">
+      <input type="text" class="prefs-input" id="prefsInput" placeholder="Type your answer..." />
+      <button class="prefs-send-btn" id="prefsSendBtn" onclick="sendPreferenceAnswer()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 4: LOADING
+     ============================================================ -->
+<div id="screen-loading" class="screen loading-screen">
+  <div class="loading-bg"></div>
+  <div class="loading-dots">
+    <div class="loading-dot" id="ldot0"></div>
+    <div class="loading-dot" id="ldot1"></div>
+    <div class="loading-dot" id="ldot2"></div>
+    <div class="loading-dot" id="ldot3"></div>
+    <div class="loading-dot" id="ldot4"></div>
+  </div>
+  <div class="loading-headline">Planning your trip to</div>
+  <div class="loading-destination" id="loadingDestination">Milos &amp; Koufonisia</div>
+
+  <div class="loading-steps" id="loadingStepsContainer"></div>
+
+  <div class="loading-ready" id="loadingReady">
+    <div class="loading-checkmark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="loading-ready-text">Your trip is ready</div>
+  </div>
+
+  <div class="loading-fact" id="loadingFact">
+    <strong>While you wait:</strong> Milos is a volcanic island with 70+ beaches. Don't miss Sarakiniko &mdash; it looks like the moon landed in the Aegean.
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 5: ITINERARY RESULTS
+     ============================================================ -->
+<div id="screen-itinerary" class="screen">
+
+  <div id="itinHero" class="itin-hero"></div>
+
+  <div class="itin-container">
+    <div id="itinDaysContainer"></div>
+    <div id="itinAccommodationContainer"></div>
+    <div id="itinCostsContainer"></div>
+    <div id="itinActionsContainer"></div>
+    <div id="itinLinksContainer"></div>
+    <div class="itin-footer" id="itinFooter"></div>
+  </div>
+
+  <!-- Sticky bottom bar -->
+  <div class="itin-sticky-bar" id="itinStickyBar">
+    <div class="itin-sticky-cost" id="itinStickyCost"></div>
+    <button class="itin-share-btn" onclick="openShareSheet()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      Share Plan
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 6: SHARE OVERLAY
+     ============================================================ -->
+<div id="screen-share" class="share-overlay">
+  <div class="share-sheet">
+    <div class="share-sheet-title">Share your trip plan</div>
+
+    <button class="share-option whatsapp" onclick="shareWhatsApp()">
+      <div class="share-option-icon wa-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+      <div class="share-option-text">
+        <div class="share-option-label">Share to WhatsApp</div>
+        <div class="share-option-desc">Opens WhatsApp with a link and preview message</div>
+      </div>
+    </button>
+
+    <button class="share-option" id="copyLinkBtn" onclick="copyLink()">
+      <div class="share-option-icon copy-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </div>
+      <div class="share-option-text">
+        <div class="share-option-label" id="copyLinkLabel">Copy link</div>
+        <div class="share-option-desc" id="copyLinkDesc">For any app or email</div>
+      </div>
+    </button>
+
+    <div class="share-preview">
+      <div class="share-preview-label">WhatsApp preview message</div>
+      <div>
+        <strong>Greece 2026 &mdash; Milos &amp; Koufonisia</strong><br><br>
+        Aug 14&ndash;21 &middot; 3 couples &middot; ~&euro;700&ndash;1,500pp<br><br>
+        I put together the full plan &mdash; flights, ferries, places to stay, costs. Have a look:<br><br>
+        <span style="color:var(--aegean);">tripforge.app/plan/greece-2026</span>
+      </div>
+    </div>
+
+    <button class="share-cancel" onclick="closeShareSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 7: RECIPIENT VIEW
+     ============================================================ -->
+<div id="screen-recipient" class="screen">
+
+  <div class="itin-attribution">
+    <strong>Planned by Sarah</strong> &middot; powered by <a href="#" class="tf-link" onclick="goToScreen('landing');return false;">TripForge</a><br>
+    Prices are estimates. Tap links to check live availability and book.
+  </div>
+
+  <div class="itin-hero">
+    <h1 class="itin-hero-title">Greece 2026</h1>
+    <div class="itin-hero-subtitle">Milos &amp; Koufonisia</div>
+    <div class="itin-hero-meta">
+      <span>Thu 14 Aug &ndash; Thu 21 Aug</span>
+      <span>&middot;</span>
+      <span>3 couples</span>
+    </div>
+    <div class="itin-route-pills">
+      <span class="itin-route-stop">London</span>
+      <span class="itin-route-arrow">&rarr;</span>
+      <span class="itin-route-stop">Athens</span>
+      <span class="itin-route-arrow">&rarr;</span>
+      <span class="itin-route-stop island">Milos</span>
+      <span class="itin-route-arrow">&rarr;</span>
+      <span class="itin-route-stop island">Koufonisia</span>
+      <span class="itin-route-arrow">&rarr;</span>
+      <span class="itin-route-stop">Athens</span>
+      <span class="itin-route-arrow">&rarr;</span>
+      <span class="itin-route-stop">London</span>
+    </div>
+  </div>
+
+  <div class="itin-container">
+
+    <div class="itin-section">
+      <div class="itin-section-label">Itinerary</div>
+
+      <div class="itin-day-card">
+        <div class="itin-day-date">Day 1</div>
+        <div class="itin-day-title">Thu Aug 14 &mdash; Travel Day</div>
+        <div class="itin-day-subtitle">London &rarr; Athens &rarr; Milos</div>
+        <div class="itin-transport">
+          <div class="itin-transport-badge"><span class="badge badge-flight">Flight</span></div>
+          <div class="itin-transport-info">
+            <div class="itin-transport-route">London to Athens &middot; 3h 30m direct</div>
+            <div class="itin-transport-detail">BA / Aegean from Heathrow &middot; easyJet from Gatwick &middot; Ryanair from Stansted<br>Expect ~&pound;95&ndash;160 return</div>
+          </div>
+        </div>
+        <div class="itin-transport">
+          <div class="itin-transport-badge"><span class="badge badge-flight">Flight</span></div>
+          <div class="itin-transport-info">
+            <div class="itin-transport-route">Athens to Milos &middot; 40 min</div>
+            <div class="itin-transport-detail">Olympic Air from &euro;44 / Sky Express from &euro;39 &middot; Aug realistically &euro;50&ndash;170 one way</div>
+          </div>
+        </div>
+        <div class="itin-transport">
+          <div class="itin-transport-badge"><span class="badge badge-ferry">Ferry alt</span></div>
+          <div class="itin-transport-info">
+            <div class="itin-transport-route">Piraeus to Milos &middot; SeaJets ~2h 35m &middot; &euro;63&ndash;90</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="itin-day-card highlight">
+        <div class="itin-day-date">Days 1&ndash;6</div>
+        <div class="itin-day-title">Aug 14&ndash;19 &mdash; Milos</div>
+        <div class="itin-day-subtitle">5 nights &middot; rent a car</div>
+        <ul class="itin-highlights">
+          <li>Sarakiniko (lunar landscape beach)</li>
+          <li>Tsigrado &amp; Firiplaka (south coast gems)</li>
+          <li>Kleftiko boat tour from Adamas (~&euro;60&ndash;120pp)</li>
+          <li>Plaka village for sunset</li>
+          <li>Paleochori (hot sand beach with tavernas)</li>
+        </ul>
+        <div class="itin-note">
+          <span class="itin-note-icon">&#9888;&#65039;</span>
+          <div><strong>Heads up:</strong> Aug 15 is Assumption of Mary &mdash; big Greek holiday.</div>
+        </div>
+      </div>
+
+      <div class="itin-day-card">
+        <div class="itin-day-date">Day 6</div>
+        <div class="itin-day-title">Tue Aug 19 &mdash; Island Hop</div>
+        <div class="itin-day-subtitle">Milos &rarr; Koufonisia</div>
+        <div class="itin-transport">
+          <div class="itin-transport-badge"><span class="badge badge-ferry">Ferry</span></div>
+          <div class="itin-transport-info">
+            <div class="itin-transport-route">SeaJets &middot; Departs ~08:00 &middot; ~4 hours</div>
+            <div class="itin-transport-detail">&euro;107.70 per person</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="itin-day-card highlight">
+        <div class="itin-day-date">Days 6&ndash;8</div>
+        <div class="itin-day-title">Aug 19&ndash;21 &mdash; Koufonisia</div>
+        <div class="itin-day-subtitle">2 nights &middot; no car needed</div>
+        <ul class="itin-highlights">
+          <li>Pori beach (best on the island, fine white sand)</li>
+          <li>Italida &amp; Fanos beaches</li>
+          <li>Chora village &mdash; tavernas, bars, bakeries</li>
+          <li>Sea taxi around the island</li>
+        </ul>
+      </div>
+
+      <div class="itin-day-card">
+        <div class="itin-day-date">Day 8</div>
+        <div class="itin-day-title">Thu Aug 21 &mdash; Return</div>
+        <div class="itin-day-subtitle">Koufonisia &rarr; Athens &rarr; London</div>
+        <div class="itin-transport">
+          <div class="itin-transport-badge"><span class="badge badge-ferry">Ferry</span></div>
+          <div class="itin-transport-info">
+            <div class="itin-transport-route">Koufonisia to Piraeus &middot; SeaJets Champion Jet 3</div>
+            <div class="itin-transport-detail">Departs ~13:20, arrives ~17:50 &middot; &euro;42&ndash;85pp</div>
+          </div>
+        </div>
+        <div class="itin-transport">
+          <div class="itin-transport-badge"><span class="badge badge-flight">Flight</span></div>
+          <div class="itin-transport-info">
+            <div class="itin-transport-route">Athens to London (evening)</div>
+            <div class="itin-transport-detail">21:15 Ryanair &rarr; Stansted &middot; 19:10 Aegean &rarr; Heathrow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MILOS ACCOMMODATION -->
+    <div class="itin-section">
+      <div class="itin-section-label">Milos Accommodation &middot; Aug 14&ndash;19 (5 nights, 2 guests)</div>
+
+      <a href="https://www.holidu.com/d/62182229" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Echinousa Apartment no6</div>
+          <div class="itin-acc-location">Psathi &middot; 1 bed &middot; sea view &middot; free daily cleaning + port transfer</div>
+          <div class="itin-acc-rating">&#9733; 10.0 / 10</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">$118</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$590 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.holidu.com/d/62175009" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Echinousa Katoikia no2</div>
+          <div class="itin-acc-location">Psathi &middot; 1 bed &middot; king bed &middot; mountain views</div>
+          <div class="itin-acc-rating">&#9733; 9.0 / 10</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">$118</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$590 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.holidu.com/d/53364856" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Nikos Family Milos</div>
+          <div class="itin-acc-location">Adamas (port town) &middot; 2 bed &middot; sea view &middot; private terrace</div>
+          <div class="itin-acc-rating">&#9733; 7.2 / 10</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">$177</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$885 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.holidu.com/d/62175042" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Echinousa Maisonette no4</div>
+          <div class="itin-acc-location">Psathi &middot; 1 bed + living room &middot; 3 balconies &middot; free port transfer</div>
+          <div class="itin-acc-rating">&#9733; 10.0 / 10</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">$259</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$1,295 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.holidu.com/d/56256054" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Moon Kiss Apartment</div>
+          <div class="itin-acc-location">Milos &middot; sea view &middot; shared heated pool &middot; beachfront</div>
+          <div class="itin-acc-rating">&#9733; 8.7 / 10</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">$321</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$1,605 total</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- KOUFONISIA ACCOMMODATION -->
+    <div class="itin-section">
+      <div class="itin-section-label">Koufonisia Accommodation &middot; Aug 19&ndash;21 (2 nights, 2 guests)</div>
+
+      <a href="https://www.booking.com/hotel/gr/alkionides-studios-koufonisi.html" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Alkionides Studios</div>
+          <div class="itin-acc-location">Chora &middot; 600m from beach</div>
+          <div class="itin-acc-rating">&#9733; 9.7 / 10 (234 reviews)</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">~$85</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$170 total</div>
+        </div>
+      </a>
+
+      <a href="https://aeoloshotel.com" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Aeolos Hotel</div>
+          <div class="itin-acc-location">Chora &middot; pool &middot; 200m from port &middot; breakfast buffet</div>
+          <div class="itin-acc-rating">&#9733; 9.3 / 10</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">~$114</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$228 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.myrtohotelkoufonisia.com" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Myrto Hotel</div>
+          <div class="itin-acc-location">Chora &middot; beachfront &middot; 40m from beach &middot; 200m from port</div>
+          <div class="itin-acc-rating">&#9733; 8.8 / 10 (385 reviews)</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">~$129</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$258 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.booking.com/hotel/gr/keros-art.html" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Keros Art Hotel</div>
+          <div class="itin-acc-location">Chora &middot; boutique &middot; pool &middot; daily breakfast &middot; sea-view balconies</div>
+          <div class="itin-acc-rating">&#9733; 9.7 / 10 (707 reviews)</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">~$194</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$388 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.airbnb.com/rooms/3624609" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">Thalasso-Koufonisia</div>
+          <div class="itin-acc-location">Airbnb &middot; traditional island house &middot; 3 guests</div>
+          <div class="itin-acc-rating">&#9733; 4.96 / 5 (53 reviews)</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">~$139</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$278 total</div>
+        </div>
+      </a>
+
+      <a href="https://www.airbnb.com/rooms/50684416" target="_blank" class="itin-accommodation-card">
+        <div class="itin-acc-info">
+          <div class="itin-acc-name">ARCHANGELO Sea View</div>
+          <div class="itin-acc-location">Airbnb &middot; Cycladic apartment &middot; 400m from port beach</div>
+          <div class="itin-acc-rating">&#9733; 4.98 / 5 (45 reviews)</div>
+        </div>
+        <div class="itin-acc-price">
+          <div class="itin-acc-price-amount">~$164</div>
+          <div class="itin-acc-price-meta">per night &middot; ~$328 total</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- COSTS -->
+    <div class="itin-section">
+      <div class="itin-section-label">Estimated Costs Per Person</div>
+      <div class="itin-cost-card">
+        <table class="itin-cost-table">
+          <tr><td>Flights London &harr; Athens (return)</td><td>&pound;95 &ndash; 160</td></tr>
+          <tr><td>Flight Athens &rarr; Milos (one way)</td><td>&euro;50 &ndash; 170</td></tr>
+          <tr><td>Ferry Milos &rarr; Koufonisia</td><td>&euro;108</td></tr>
+          <tr><td>Ferry Koufonisia &rarr; Piraeus</td><td>&euro;42 &ndash; 85</td></tr>
+          <tr><td>Taxi Piraeus &rarr; ATH airport</td><td>&euro;20 (your half)</td></tr>
+          <tr><td>Milos accommodation (5 nights, your half)</td><td>$295 &ndash; 800</td></tr>
+          <tr><td>Koufonisia accommodation (2 nights, your half)</td><td>$85 &ndash; 194</td></tr>
+          <tr><td>Car rental Milos (5 days, split)</td><td>&euro;150 &ndash; 250</td></tr>
+          <tr class="total"><td>Total per person (approx)</td><td>&euro;700 &ndash; 1,500</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="itin-section">
+      <div class="itin-section-label">What to Book Now (in order of urgency)</div>
+      <div class="itin-action">
+        <div class="itin-action-number">1</div>
+        <div class="itin-action-content">
+          <div class="itin-action-title">Koufonisia accommodation</div>
+          <div class="itin-action-reason">Only ~20 places on the entire island. August sells out completely.</div>
+          <div class="itin-action-links">
+            <a href="https://www.airbnb.com/s/Koufonisia--Greece/homes?checkin=2026-08-19&checkout=2026-08-21&adults=2" target="_blank" class="itin-action-link">Search Airbnb</a>
+            <a href="https://www.booking.com/searchresults.html?ss=Koufonisia&checkin=2026-08-19&checkout=2026-08-21&group_adults=2" target="_blank" class="itin-action-link">Search Booking.com</a>
+          </div>
+        </div>
+      </div>
+      <div class="itin-action">
+        <div class="itin-action-number">2</div>
+        <div class="itin-action-content">
+          <div class="itin-action-title">Athens &rarr; Milos flight</div>
+          <div class="itin-action-reason">Tiny 70-seat turboprops, sells out months ahead.</div>
+          <div class="itin-action-links">
+            <a href="https://www.olympicair.com/en/flights-from-athens-to-milos" target="_blank" class="itin-action-link">Olympic Air</a>
+            <a href="https://www.skyexpress.gr/en/flights-from-athens-to-milos" target="_blank" class="itin-action-link">Sky Express</a>
+          </div>
+        </div>
+      </div>
+      <div class="itin-action">
+        <div class="itin-action-number">3</div>
+        <div class="itin-action-content">
+          <div class="itin-action-title">Milos accommodation</div>
+          <div class="itin-action-reason">More options but still peak August.</div>
+          <div class="itin-action-links">
+            <a href="https://www.holidu.com/vacation-rentals/greece/milos?checkin=2026-08-14&checkout=2026-08-19&adults=2" target="_blank" class="itin-action-link">Search Holidu</a>
+            <a href="https://www.airbnb.com/s/Milos--Greece/homes?checkin=2026-08-14&checkout=2026-08-19&adults=2" target="_blank" class="itin-action-link">Search Airbnb</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="itin-footer">
+      Last updated Feb 2026 &middot; Prices are estimates, check links for live availability
+    </div>
+  </div>
+
+  <!-- Recipient sticky bar -->
+  <div class="itin-sticky-bar visible" id="recipientStickyBar">
+    <div class="itin-sticky-cost">
+      <strong>&euro;700 &ndash; 1,500</strong>
+      per person (approx)
+    </div>
+    <button class="recipient-cta-btn" onclick="goToScreen('landing')">
+      Plan your own trip
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ── State ──
+let currentScreen = 'landing';
+let tripSpec = null;
+let itinerary = null;
+
+// ── Screen navigation ──
+function goToScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('itinStickyBar').classList.remove('visible');
+  document.getElementById('recipientStickyBar').classList.remove('visible');
+  closeShareSheet();
+
+  const el = document.getElementById('screen-' + name);
+  if (el) {
+    setTimeout(() => {
+      el.classList.add('active');
+      window.scrollTo(0, 0);
+    }, 50);
+  }
+
+  if (name === 'itinerary') {
+    setTimeout(() => document.getElementById('itinStickyBar').classList.add('visible'), 100);
+  }
+  if (name === 'recipient') {
+    setTimeout(() => document.getElementById('recipientStickyBar').classList.add('visible'), 100);
+  }
+
+  currentScreen = name;
+}
+
+// ── Brief input ──
+const briefTextarea = document.getElementById('briefText');
+const briefSubmit = document.getElementById('briefSubmit');
+const charCount = document.getElementById('charCount');
+
+briefTextarea.addEventListener('input', function() {
+  const len = this.value.length;
+  charCount.textContent = len > 0 ? len + ' characters' : '';
+  briefSubmit.disabled = len < 30;
+});
+
+function fillExample(el) {
+  briefTextarea.value = el.textContent.trim();
+  briefTextarea.dispatchEvent(new Event('input'));
+  briefTextarea.focus();
+}
+
+// ── Submit brief → extract spec or load default ──
+async function submitBrief() {
+  briefSubmit.innerHTML = '<span style="animation:pulse 1.5s ease-in-out infinite;display:inline-block;">Understanding your trip...</span>';
+  briefSubmit.disabled = true;
+
+  let usedFallback = false;
+  try {
+    // Try Claude NLP extraction first
+    const res = await fetch('/api/extract-brief', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: briefTextarea.value }),
+    });
+
+    if (res.ok) {
+      tripSpec = await res.json();
+    } else {
+      // Fallback to default spec
+      const fallback = await fetch('/api/default-spec');
+      tripSpec = await fallback.json();
+      usedFallback = true;
+    }
+  } catch (err) {
+    // Network error — fallback to default spec
+    try {
+      const fallback = await fetch('/api/default-spec');
+      tripSpec = await fallback.json();
+      usedFallback = true;
+    } catch (e) {
+      alert('Could not connect to server. Make sure python server.py is running.');
+      briefSubmit.innerHTML = 'Build my trip <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      briefSubmit.disabled = false;
+      return;
+    }
+  }
+
+  if (usedFallback) {
+    alert('Could not process your brief (AI service busy). Loading the demo trip instead — you can edit the details on the next screen.');
+  }
+
+  briefSubmit.innerHTML = 'Build my trip <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  briefSubmit.disabled = false;
+
+  renderConfirmScreen(tripSpec);
+  goToScreen('confirm');
+}
+
+// ── Render confirm screen from TripSpecification ──
+function renderConfirmScreen(spec) {
+  const card = document.getElementById('confirmCard');
+  const editBtn = '<button class="confirm-edit-btn" onclick="goToScreen(\'brief\')">Edit</button>';
+
+  // Calculate nights
+  const startDate = new Date(spec.start_date + 'T00:00:00');
+  const endDate = new Date(spec.end_date + 'T00:00:00');
+  const totalNights = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+  // Format dates
+  const fmtDate = (d) => {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  // Build travelers detail
+  const travelersDetail = spec.origins.map(o => {
+    const code = o.airport_code || o.city.slice(0, 3).toUpperCase();
+    const note = code === spec.hub_airport ? 'Already there' : `Flying from ${code}`;
+    return `${o.label || o.city} (${o.num_travelers}) &middot; ${note}`;
+  }).join('<br>');
+
+  // Build route visualization
+  let routeHtml = '';
+  // First origin
+  const firstOrigin = spec.origins[0];
+  if (firstOrigin.airport_code !== spec.hub_airport) {
+    routeHtml += routeLeg(firstOrigin.city, `Flight to ${spec.hub_city}`, false, true);
+  }
+  // Hub
+  routeHtml += routeLeg(spec.hub_city, `Flight or ferry to ${spec.stops[0].island}`, false, true);
+  // Stops
+  spec.stops.forEach((stop, i) => {
+    const meta = `${stop.nights} nights` + (stop.needs_car ? ' &middot; Rent a car' : ' &middot; Walkable, no car needed');
+    const isLast = i === spec.stops.length - 1;
+    routeHtml += routeLeg(stop.island, meta, true, !isLast, true);
+  });
+  // Return hub
+  const lastIsland = spec.stops[spec.stops.length - 1].island;
+  routeHtml += routeLeg(spec.hub_city, `Ferry from ${lastIsland}`, false, true);
+  // Return home
+  if (firstOrigin.airport_code !== spec.hub_airport) {
+    routeHtml += routeLeg(firstOrigin.city, `Flight from ${spec.hub_city}`, false, false);
+  }
+
+  // Preferences
+  const prefBadges = (spec.preferences || []).map(p =>
+    `<span class="badge" style="background:var(--sand);color:var(--ink-secondary);">${esc(p)}</span>`
+  ).join('');
+  if (spec.budget_notes) {
+    // nothing extra needed, could add budget badge
+  }
+
+  card.innerHTML = `
+    <div class="confirm-section">
+      <div class="confirm-section-label">Title</div>
+      <div class="confirm-section-value">${esc(spec.title)}</div>
+      ${editBtn}
+    </div>
+    <div class="confirm-section">
+      <div class="confirm-section-label">Travelers</div>
+      <div class="confirm-section-value">${spec.total_travelers} people${spec.group_description ? ' &middot; ' + esc(spec.group_description) : ''}</div>
+      <div class="confirm-section-detail">${travelersDetail}</div>
+      ${editBtn}
+    </div>
+    <div class="confirm-section">
+      <div class="confirm-section-label">Dates</div>
+      <div class="confirm-section-value">${fmtDate(spec.start_date)} &ndash; ${fmtDate(spec.end_date)}, ${new Date(spec.end_date + 'T00:00:00').getFullYear()}</div>
+      <div class="confirm-section-detail">${totalNights} nights</div>
+      ${editBtn}
+    </div>
+    <div class="confirm-section">
+      <div class="confirm-section-label">Route</div>
+      <div class="confirm-route">${routeHtml}</div>
+      ${editBtn}
+    </div>
+    ${prefBadges ? `<div class="confirm-section">
+      <div class="confirm-section-label">Preferences</div>
+      <div class="confirm-section-value" style="display:flex;flex-wrap:wrap;gap:6px;">${prefBadges}</div>
+      ${editBtn}
+    </div>` : ''}
+  `;
+}
+
+function routeLeg(name, meta, isIsland, hasConnector, isMeta) {
+  const dotClass = isIsland ? 'route-dot island' : 'route-dot';
+  const connector = hasConnector ? `<div class="route-connector${isIsland ? '' : ' dashed'}"></div>` : '';
+  const metaTag = isMeta
+    ? `<div class="route-place-meta">${meta}</div>`
+    : `<div class="route-transport-label">${meta}</div>`;
+  return `
+    <div class="route-leg">
+      <div class="route-line">
+        <div class="${dotClass}"></div>
+        ${connector}
+      </div>
+      <div class="route-leg-info">
+        <div class="route-place-name">${esc(name)}</div>
+        ${metaTag}
+      </div>
+    </div>`;
+}
+
+// ── Preferences conversation ──
+let prefsSessionId = null;
+let prefsStep = 0;
+let prefsTotalSteps = 5;
+
+async function startPreferences() {
+  goToScreen('preferences');
+
+  // Reset UI
+  const chat = document.getElementById('prefsChat');
+  chat.innerHTML = '';
+  document.getElementById('prefsInput').value = '';
+  prefsStep = 0;
+
+  updatePrefsProgress(1, prefsTotalSteps);
+  addSystemMessage('Let me ask a few quick questions so I can find the best options for your trip...');
+
+  try {
+    const res = await fetch('/api/preferences/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spec: tripSpec }),
+    });
+
+    if (!res.ok) {
+      // API not available — skip to research
+      startResearch();
+      return;
+    }
+
+    const data = await res.json();
+    prefsSessionId = data.session_id;
+    prefsStep = data.step;
+    prefsTotalSteps = data.total_steps;
+
+    updatePrefsProgress(data.step, data.total_steps);
+    addSystemMessage(data.question);
+    if (data.options && data.options.length) renderChips(data.options);
+    document.getElementById('prefsInput').focus();
+  } catch (err) {
+    // Network error — skip to research
+    startResearch();
+  }
+}
+
+async function sendPreferenceAnswer(chipText) {
+  const input = document.getElementById('prefsInput');
+  const answer = chipText || input.value.trim();
+  if (!answer) return;
+
+  // Show user message
+  addUserMessage(answer);
+  input.value = '';
+
+  // Remove chips
+  const existingChips = document.querySelector('.prefs-chips');
+  if (existingChips) existingChips.remove();
+
+  // Disable input while waiting
+  input.disabled = true;
+  document.getElementById('prefsSendBtn').disabled = true;
+
+  try {
+    const res = await fetch('/api/preferences/answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: prefsSessionId, answer }),
+    });
+
+    const data = await res.json();
+    updatePrefsProgress(data.step, data.total_steps);
+
+    if (data.type === 'question') {
+      addSystemMessage(data.question);
+      if (data.options && data.options.length) renderChips(data.options);
+      input.disabled = false;
+      document.getElementById('prefsSendBtn').disabled = false;
+      input.focus();
+    } else if (data.type === 'summary') {
+      // Show summary for confirmation
+      document.getElementById('prefsInputBar').style.display = 'none';
+      addSystemMessage('Here\'s what I gathered:');
+
+      const chat = document.getElementById('prefsChat');
+      const card = document.createElement('div');
+      card.className = 'prefs-summary-card';
+      card.innerHTML = `
+        <p>${data.summary}</p>
+        <div class="prefs-summary-actions">
+          <button class="btn-primary" onclick="confirmPreferences()">
+            That's right &mdash; find options
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <button class="prefs-skip" onclick="startResearch()">Skip &mdash; just find options without preferences</button>
+        </div>
+      `;
+      chat.appendChild(card);
+      chat.scrollTop = chat.scrollHeight;
+    }
+  } catch (err) {
+    input.disabled = false;
+    document.getElementById('prefsSendBtn').disabled = false;
+    addSystemMessage('Sorry, something went wrong. You can try again or skip to results.');
+  }
+}
+
+async function confirmPreferences() {
+  try {
+    const res = await fetch('/api/preferences/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: prefsSessionId }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      tripSpec = data.spec;
+    }
+  } catch (err) {
+    // Continue with existing spec
+  }
+
+  startResearch();
+}
+
+function addSystemMessage(text) {
+  const chat = document.getElementById('prefsChat');
+  const msg = document.createElement('div');
+  msg.className = 'prefs-message system';
+  msg.textContent = text;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addUserMessage(text) {
+  const chat = document.getElementById('prefsChat');
+  const msg = document.createElement('div');
+  msg.className = 'prefs-message user';
+  msg.textContent = text;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function renderChips(options) {
+  const chat = document.getElementById('prefsChat');
+  const row = document.createElement('div');
+  row.className = 'prefs-chips';
+  options.forEach(opt => {
+    const chip = document.createElement('button');
+    chip.className = 'prefs-chip';
+    chip.textContent = opt;
+    chip.onclick = () => sendPreferenceAnswer(opt);
+    row.appendChild(chip);
+  });
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function updatePrefsProgress(step, total) {
+  const bar = document.getElementById('prefsProgressBar');
+  let html = '';
+  for (let i = 1; i <= total; i++) {
+    if (i < step) html += '<div class="prefs-progress-seg done"></div>';
+    else if (i === step) html += '<div class="prefs-progress-seg active"></div>';
+    else html += '<div class="prefs-progress-seg"></div>';
+  }
+  bar.innerHTML = html;
+}
+
+// Enter key for preferences input
+document.getElementById('prefsInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendPreferenceAnswer();
+  }
+});
+
+// ── Research / Loading with live SSE ──
+const funFacts = [
+  'Milos is a volcanic island with 70+ beaches. Don\'t miss Sarakiniko \u2014 it looks like the moon landed in the Aegean.',
+  'The Venus de Milo was found on Milos in 1820 by a farmer. It\'s now in the Louvre. The locals want it back.',
+  'Kleftiko is a sea cave complex you can only reach by boat. Book the tour from Adamas port.',
+  'Koufonisia has about 400 permanent residents and roughly 20 places to stay. If you haven\'t booked yet, now is the time.',
+  'Pori beach on Koufonisia has sand so fine it squeaks when you walk on it. No loungers, no umbrellas, no buildings.'
+];
+let factIndex = 0;
+let factInterval = null;
+
+async function startResearch() {
+  goToScreen('loading');
+
+  // Set destination label
+  const destLabel = tripSpec.stops.map(s => s.island).join(' &amp; ');
+  document.getElementById('loadingDestination').innerHTML = destLabel;
+
+  // Reset loading UI
+  const stepsContainer = document.getElementById('loadingStepsContainer');
+  const dotsContainer = document.querySelector('.loading-dots');
+  document.getElementById('loadingReady').classList.remove('show');
+  stepsContainer.style.display = 'block';
+  document.getElementById('loadingFact').style.display = 'block';
+
+  // We don't know step names upfront — build from SSE progress events
+  stepsContainer.innerHTML = '<div class="loading-step active"><div class="loading-step-icon"></div><span>Starting research...</span></div>';
+  dotsContainer.innerHTML = '';
+
+  // Start fun facts rotation
+  factIndex = 0;
+  const factEl = document.getElementById('loadingFact');
+  factEl.innerHTML = '<strong>While you wait:</strong> ' + funFacts[0];
+  factEl.style.opacity = '1';
+  if (factInterval) clearInterval(factInterval);
+  factInterval = setInterval(() => {
+    factIndex = (factIndex + 1) % funFacts.length;
+    factEl.style.opacity = '0';
+    setTimeout(() => {
+      factEl.innerHTML = '<strong>While you wait:</strong> ' + funFacts[factIndex];
+      factEl.style.opacity = '1';
+    }, 300);
+  }, 3000);
+
+  try {
+    const res = await fetch('/api/research', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spec: tripSpec }),
+    });
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let completedSteps = [];
+    let totalTasks = 0;
+    let eventType = '';
+    let eventData = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      // Parse SSE events from buffer
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // keep incomplete line
+
+      for (const line of lines) {
+        if (line.startsWith('event: ')) {
+          eventType = line.slice(7).trim();
+        } else if (line.startsWith('data: ')) {
+          eventData = line.slice(6);
+        } else if (line === '' && eventType && eventData) {
+          // Process event
+          if (eventType === 'progress') {
+            const prog = JSON.parse(eventData);
+            totalTasks = prog.total;
+            completedSteps.push(prog.step);
+            updateLoadingSteps(completedSteps, totalTasks, dotsContainer, stepsContainer);
+          } else if (eventType === 'complete') {
+            itinerary = JSON.parse(eventData);
+          } else if (eventType === 'error') {
+            console.error('Server error:', eventData);
+          }
+          eventType = '';
+          eventData = '';
+        }
+      }
+    }
+
+    // All done
+    if (factInterval) clearInterval(factInterval);
+
+    if (!itinerary) {
+      alert('Research timed out — the server may need more time. Please try again.');
+      goToScreen('confirm');
+      return;
+    }
+
+    // Show completion UI
+    stepsContainer.style.display = 'none';
+    factEl.style.display = 'none';
+    document.getElementById('loadingReady').classList.add('show');
+
+    // Render and transition after short delay
+    setTimeout(() => {
+      renderItinerary(itinerary);
+      goToScreen('itinerary');
+    }, 1400);
+
+  } catch (err) {
+    if (factInterval) clearInterval(factInterval);
+    alert('Research failed: ' + err.message);
+    goToScreen('confirm');
+  }
+}
+
+function updateLoadingSteps(completedSteps, total, dotsContainer, stepsContainer) {
+  // Update dots
+  let dotsHtml = '';
+  for (let i = 0; i < total; i++) {
+    if (i < completedSteps.length) {
+      dotsHtml += '<div class="loading-dot complete"></div>';
+    } else if (i === completedSteps.length) {
+      dotsHtml += '<div class="loading-dot active"></div>';
+    } else {
+      dotsHtml += '<div class="loading-dot"></div>';
+    }
+  }
+  dotsContainer.innerHTML = dotsHtml;
+
+  // Build step labels from task names
+  const labelMap = (name) => {
+    if (name.startsWith('flights_')) return 'Checked ' + name.replace('flights_', '').replace(/_to_/g, ' \u2192 ') + ' flights';
+    if (name.startsWith('ferries_')) return 'Searched ' + name.replace('ferries_', '').replace(/_to_/g, ' \u2192 ').replace('hub', 'Piraeus') + ' ferries';
+    if (name.startsWith('accommodation_')) return 'Found ' + name.replace('accommodation_', '') + ' accommodation';
+    return name;
+  };
+
+  let stepsHtml = '';
+  // Show last 3 completed + current active
+  const showSteps = completedSteps.slice(-3);
+  showSteps.forEach(s => {
+    stepsHtml += `<div class="loading-step complete"><div class="loading-step-icon"></div><span>${labelMap(s)}</span></div>`;
+  });
+  const remaining = total - completedSteps.length;
+  if (remaining > 0) {
+    stepsHtml += `<div class="loading-step active"><div class="loading-step-icon"></div><span>Searching... (${remaining} remaining)</span></div>`;
+  }
+  stepsContainer.innerHTML = stepsHtml;
+}
+
+// ── Itinerary rendering functions ──
+
+function renderItinerary(itin) {
+  renderItinHero(itin);
+  renderDayCards(itin.days);
+  renderAccommodationSections(itin.accommodation_sections);
+  renderCostBreakdowns(itin.cost_breakdowns);
+  renderActionItems(itin.action_items);
+  renderUsefulLinks(itin.useful_links);
+  renderStickyBar(itin);
+  document.getElementById('itinFooter').innerHTML =
+    `Last updated ${itin.generated_at || new Date().toLocaleDateString('en-US', {month:'short', year:'numeric'})} &middot; Prices are estimates, check links for live availability`;
+}
+
+function renderItinHero(itin) {
+  const pills = (itin.route_summary || []).map((stop, i, arr) => {
+    const isIsland = tripSpec && tripSpec.stops.some(s => s.island === stop);
+    const cls = isIsland ? 'itin-route-stop island' : 'itin-route-stop';
+    const pill = `<span class="${cls}">${esc(stop)}</span>`;
+    return i < arr.length - 1 ? pill + '<span class="itin-route-arrow">&rarr;</span>' : pill;
+  }).join('');
+
+  document.getElementById('itinHero').innerHTML = `
+    <h1 class="itin-hero-title">${itin.title}</h1>
+    <div class="itin-hero-subtitle">${itin.subtitle}</div>
+    <div class="itin-hero-meta">
+      <span>${itin.date_range}</span>
+      <span>&middot;</span>
+      <span>${esc(itin.group_info)}</span>
+    </div>
+    <div class="itin-route-pills">${pills}</div>
+  `;
+}
+
+function renderDayCards(days) {
+  if (!days || !days.length) return;
+  let html = '<div class="itin-section"><div class="itin-section-label">Itinerary</div>';
+
+  days.forEach(day => {
+    const highlightClass = day.is_highlight ? ' highlight' : '';
+
+    // Transport legs
+    let transportHtml = '';
+    (day.transport_legs || []).forEach(leg => {
+      const badgeLabel = leg.mode === 'flight' ? 'Flight' : leg.mode === 'ferry' ? 'Ferry' : 'Taxi';
+      const badgeClass = leg.badge_class || ('badge-' + leg.mode);
+
+      // Build description line
+      let descLine = '';
+      if (leg.description) descLine = leg.description;
+      if (leg.price_display) descLine += (descLine ? ' &middot; ' : '') + leg.price_display;
+
+      // Build individual booking options from leg.options
+      let optionsHtml = '';
+      if (leg.options && leg.options.length > 0) {
+        optionsHtml = '<div class="itin-action-links" style="margin-top:8px;">';
+        leg.options.forEach(opt => {
+          const url = opt.booking_url;
+          const label = opt.airline || opt.operator || 'Book';
+          const price = opt.price_amount > 0
+            ? ` ${opt.price_currency === 'GBP' ? '£' : '€'}${Math.round(opt.price_amount)}`
+            : '';
+          if (url) {
+            optionsHtml += `<a href="${escAttr(url)}" target="_blank" class="itin-action-link">${esc(label)}${price}</a>`;
+          } else {
+            optionsHtml += `<span class="itin-action-link">${esc(label)}${price}</span>`;
+          }
+        });
+        optionsHtml += '</div>';
+      }
+
+      // Notes
+      let legNotes = leg.notes ? `<div style="font-size:0.8125rem;color:var(--ink-tertiary);margin-top:4px;">${leg.notes}</div>` : '';
+
+      transportHtml += `
+        <div class="itin-transport">
+          <div class="itin-transport-badge"><span class="badge ${badgeClass}">${badgeLabel}</span></div>
+          <div class="itin-transport-info">
+            <div class="itin-transport-route">${leg.origin} to ${leg.destination}</div>
+            <div class="itin-transport-detail">${descLine}</div>
+            ${optionsHtml}
+            ${legNotes}
+          </div>
+        </div>`;
+    });
+
+    // Highlights
+    let highlightsHtml = '';
+    if (day.highlights && day.highlights.length) {
+      highlightsHtml = '<ul class="itin-highlights">' +
+        day.highlights.map(h => `<li>${h}</li>`).join('') +
+        '</ul>';
+    }
+
+    // Notes
+    let notesHtml = '';
+    (day.notes || []).forEach(note => {
+      notesHtml += `<div class="itin-note"><span class="itin-note-icon">&#9888;&#65039;</span><div>${note}</div></div>`;
+    });
+
+    html += `
+      <div class="itin-day-card${highlightClass}">
+        <div class="itin-day-date">${day.date_label}</div>
+        <div class="itin-day-title">${day.title}</div>
+        <div class="itin-day-subtitle">${day.subtitle}</div>
+        ${transportHtml}
+        ${highlightsHtml}
+        ${notesHtml}
+      </div>`;
+  });
+
+  html += '</div>';
+  document.getElementById('itinDaysContainer').innerHTML = html;
+}
+
+function renderAccommodationSections(sections) {
+  if (!sections || !sections.length) return;
+  let html = '';
+
+  sections.forEach(section => {
+    html += `<div class="itin-section"><div class="itin-section-label">${section.title}</div>`;
+    (section.options || []).forEach(opt => {
+      const url = opt.booking_url || '#';
+      const ratingMax = opt.rating_max || 10;
+      const ratingDisplay = opt.rating > 0 ? `<div class="itin-acc-rating">&#9733; ${opt.rating} / ${ratingMax}${opt.num_reviews ? ' (' + opt.num_reviews + ' reviews)' : ''}</div>` : '';
+      const locParts = [opt.location, opt.source].filter(Boolean);
+      const feats = (opt.features || []).join(' &middot; ');
+      const locDisplay = [...locParts, feats].filter(Boolean).join(' &middot; ');
+      const priceSymbol = opt.price_currency === 'EUR' ? '&euro;' : opt.price_currency === 'GBP' ? '&pound;' : '$';
+      const perNight = opt.price_per_night > 0 ? `${priceSymbol}${Math.round(opt.price_per_night)}` : '';
+      const total = opt.total_price > 0 ? `~${priceSymbol}${Math.round(opt.total_price)} total` : '';
+      const priceMeta = perNight ? `per night${total ? ' &middot; ' + total : ''}` : '';
+
+      html += `
+        <a href="${escAttr(url)}" target="_blank" class="itin-accommodation-card">
+          <div class="itin-acc-info">
+            <div class="itin-acc-name">${esc(opt.name)}</div>
+            <div class="itin-acc-location">${locDisplay}</div>
+            ${ratingDisplay}
+          </div>
+          <div class="itin-acc-price">
+            <div class="itin-acc-price-amount">${perNight || 'Check price'}</div>
+            <div class="itin-acc-price-meta">${priceMeta}</div>
+          </div>
+        </a>`;
+    });
+    html += '</div>';
+  });
+
+  document.getElementById('itinAccommodationContainer').innerHTML = html;
+}
+
+function renderCostBreakdowns(breakdowns) {
+  if (!breakdowns || !breakdowns.length) return;
+  let html = '';
+
+  breakdowns.forEach(bd => {
+    html += `<div class="itin-section"><div class="itin-section-label">Estimated Costs Per Person (${bd.origin_label})</div>`;
+    html += '<div class="itin-cost-card"><table class="itin-cost-table">';
+    (bd.line_items || []).forEach(item => {
+      html += `<tr><td>${item.label}</td><td>${item.amount_display}</td></tr>`;
+    });
+    if (bd.total_display) {
+      html += `<tr class="total"><td>Total per person (approx)</td><td>${bd.total_display}</td></tr>`;
+    }
+    html += '</table></div></div>';
+  });
+
+  document.getElementById('itinCostsContainer').innerHTML = html;
+}
+
+function renderActionItems(actions) {
+  if (!actions || !actions.length) return;
+  let html = '<div class="itin-section"><div class="itin-section-label">What to Book Now (in order of urgency)</div>';
+
+  actions.forEach(action => {
+    let linksHtml = '';
+    if (action.links && action.links.length) {
+      linksHtml = '<div class="itin-action-links">' +
+        action.links.map(l => `<a href="${escAttr(l[1])}" target="_blank" class="itin-action-link">${esc(l[0])}</a>`).join('') +
+        '</div>';
+    }
+
+    html += `
+      <div class="itin-action">
+        <div class="itin-action-number">${action.priority}</div>
+        <div class="itin-action-content">
+          <div class="itin-action-title">${action.title}</div>
+          <div class="itin-action-reason">${esc(action.reason)}</div>
+          ${linksHtml}
+        </div>
+      </div>`;
+  });
+
+  html += '</div>';
+  document.getElementById('itinActionsContainer').innerHTML = html;
+}
+
+function renderUsefulLinks(links) {
+  if (!links || !links.length) return;
+  let html = '<div class="itin-section"><div class="itin-section-label">Useful Links</div><div class="itin-links-grid">';
+
+  links.forEach(link => {
+    html += `
+      <a href="${escAttr(link.url)}" target="_blank" class="itin-link-card">
+        <div class="itin-link-label">${esc(link.category)}</div>
+        <div class="itin-link-name">${esc(link.name)}</div>
+      </a>`;
+  });
+
+  html += '</div></div>';
+  document.getElementById('itinLinksContainer').innerHTML = html;
+}
+
+function renderStickyBar(itin) {
+  // Use first cost breakdown total or a generic message
+  let totalDisplay = '';
+  if (itin.cost_breakdowns && itin.cost_breakdowns.length && itin.cost_breakdowns[0].total_display) {
+    totalDisplay = itin.cost_breakdowns[0].total_display;
+  }
+  document.getElementById('itinStickyCost').innerHTML = totalDisplay
+    ? `<strong>${totalDisplay}</strong>per person (approx)`
+    : `<strong>${esc(itin.title)}</strong>${esc(itin.subtitle)}`;
+}
+
+// ── Utility ──
+function esc(s) {
+  if (!s) return '';
+  const div = document.createElement('div');
+  div.textContent = String(s);
+  return div.innerHTML;
+}
+function escAttr(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ── Share sheet ──
+function openShareSheet() {
+  document.getElementById('screen-share').classList.add('active');
+}
+function closeShareSheet() {
+  document.getElementById('screen-share').classList.remove('active');
+}
+document.getElementById('screen-share').addEventListener('click', function(e) {
+  if (e.target === this) closeShareSheet();
+});
+
+function shareWhatsApp() {
+  const title = itinerary ? itinerary.title : 'Greek Islands Trip';
+  const subtitle = itinerary ? itinerary.subtitle : '';
+  const text = encodeURIComponent(
+    title + (subtitle ? ' \u2013 ' + subtitle : '') + '\n\n' +
+    'I put together the full plan \u2013 flights, ferries, places to stay, costs. Have a look:\n\n' +
+    window.location.href
+  );
+  window.open('https://wa.me/?text=' + text, '_blank');
+  closeShareSheet();
+}
+
+function copyLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    document.getElementById('copyLinkLabel').textContent = 'Link copied!';
+    document.getElementById('copyLinkDesc').textContent = url;
+    setTimeout(() => {
+      document.getElementById('copyLinkLabel').textContent = 'Copy link';
+      document.getElementById('copyLinkDesc').textContent = 'For any app or email';
+    }, 2000);
+  }).catch(() => {
+    prompt('Copy this link:', url);
+  });
+}
+
+// ── URL hash navigation ──
+if (window.location.hash === '#recipient') {
+  goToScreen('recipient');
+}
+
+// Keyboard shortcuts for dev (1-7 for screens)
+document.addEventListener('keydown', function(e) {
+  const screens = ['landing', 'brief', 'confirm', 'loading', 'itinerary', 'share', 'recipient'];
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 7) {
+    if (num === 4) { startResearch(); return; }
+    if (num === 6) { goToScreen('itinerary'); setTimeout(openShareSheet, 300); return; }
+    goToScreen(screens[num - 1]);
+  }
+});
+</script>
+
+</body>
+</html>
